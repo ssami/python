@@ -1,0 +1,3 @@
+1. Models aren't shwing up in admin when you do syncdb
+a) Is your model included in the INSTALLED_APPS section in settings.py? 
+b) Is your admin.py file included? 

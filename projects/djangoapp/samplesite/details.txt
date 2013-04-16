@@ -1,0 +1,5 @@
+SU for Django admin and this app in particular: 
+
+user: ssami
+pwd: root
+email: the gmail one
