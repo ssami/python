@@ -15,22 +15,24 @@ def findAllLinks( url ) :
   return links
 
 
+## Need to remove script-related stuff too
 def cleanHtml( text ):
-    pattBreaks = re.compile('<\/?br>')
-    pattBreaks.sub('\n', text)
-    pattBreaks = re.compile('<\/?p>')
-    pattBreaks.sub('\n', text)
+    pattBreaks = re.compile('<\/?br>', re.I|re.M|re.S)
+    text = pattBreaks.sub('\n', text)
+    pattBreaks = re.compile('<\/?p>', re.I|re.M|re.S)
+    text = pattBreaks.sub('\n', text)
     f1 = open('debug1.txt', 'w')
     f1.write(text)
-    pattBreaks = re.compile('\.|\?|\!\"')
-    pattBreaks.sub('\n', text)
+    pattBreaks = re.compile('\.|\?|\!\"', re.I|re.M|re.S)
+    text = pattBreaks.sub('\n', text)
     f2 = open('debug2.txt', 'w')
     f2.write(text)
-    pattTags = re.compile('<.*?>')
-    pattTags.sub('', text)
+    pattTags = re.compile('<.*?>', re.I|re.M|re.S)
+    text = pattTags.sub('', text)
     f3 = open('debug3.txt', 'w')
-    f3.write(text)
-    
+    pattTags = re.compile('<script.*?>.*<\/script>', re.I|re.M|re.S)
+    text = pattTags.sub('', text)
+    f3.write(text)   
     return text.split('\n')
 
 
@@ -41,3 +43,4 @@ def cleanHtml( text ):
 
 origText = requests.get('http://docs.python.org/2/library/re.html').content
 cleanText = cleanHtml(origText)
+#print cleanText
