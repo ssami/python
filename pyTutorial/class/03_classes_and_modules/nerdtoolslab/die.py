@@ -1,2 +1,0 @@
-""" Our base Die class.
-"""
