@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
+<body>
+<h1 id="virtual-environments">Virtual Environments</h1>
+<p>A virtual environment is a local Python environment isolated from the system-wide environment. They are often used to prevent package dependency conflicts.</p>
+<h2 id="virtualenv">virtualenv</h2>
+<p>The term <strong>virtualenv</strong> can refer to the command <code>virtualenv</code>, used to create a virtual environment, or to the virutal environment itself.</p>
+<h2 id="virtualenvwrapper">virtualenvwrapper</h2>
+<p><code>virtualenvwrapper</code> is a set of extensions to the <code>virtualenv</code> tool. The extensions include wrappers for creating and deleting virtual environments and otherwise managing your development workflow, making it easier to work on more than one project at a time without introducing conflicts in their dependencies.</p>
+<ul>
+<li>see: <a href="https://bitbucket.org/dhellmann/virtualenvwrapper">virtualenvwrapper</a></li>
+<li><p>see: <a href="https://github.com/davidmarble/virtualenvwrapper-win">virtualenvwrapper for windows</a></p>
+<p>mkvirtualenv class New python executable in class/bin/python Installing distribute………………………………………………………………………………………………………………………………………………………………………done. Installing pip……………done. virtualenvwrapper.user_scripts creating /home/jason/.virtualenvs/class/bin/predeactivate virtualenvwrapper.user_scripts creating /home/jason/.virtualenvs/class/bin/postdeactivate virtualenvwrapper.user_scripts creating /home/jason/.virtualenvs/class/bin/preactivate virtualenvwrapper.user_scripts creating /home/jason/.virtualenvs/class/bin/postactivate virtualenvwrapper.user_scripts creating /home/jason/.virtualenvs/class/bin/get_env_details</p>
+<h1>A few packages are installed by default</h1>
+<p>pip freeze argparse==1.2.1 distribute==0.6.24 wsgiref==0.1.2</p></li>
+</ul>
+<p>Note that when the virtual environment is active, its name (in this case “class”) is prepended to the shell prompt:</p>
+<pre><code># Ordinary shell prompt
+$ 
+# Virtual environment &quot;class&quot; is active
+(class)$ </code></pre>
+<p>If later you have logged out, and want to activate this virtual environment, you can use the <code>workon</code> command:</p>
+<pre><code>$ workon class
+(class)$</code></pre>
+<p>You can deactivate the virtual environment with the <code>deactivate</code> command:</p>
+<pre><code>(class)$ deactivate
+# Back to normal shell prompt
+$ </code></pre>
+<h2 id="location-of-virtualenvs">Location of Virtualenvs</h2>
+<p>By default, <code>virtualenvwrapper</code> stores your virtual environments in <code>~/.virtualenvs</code> (or <code>%USERPROFILE%\Envs</code>).</p>
+<h2 id="virtual-environments-for-scripts">Virtual Environments for Scripts</h2>
+<p>There are several ways you can run scripts that rely on a virtualenv:</p>
+<ul>
+<li><p>Use Fabric’s <code>prefix()</code> <code>context manager</code> when calling the script remotely:</p>
+<pre><code>def task():
+    with prefix(&#39;workon class&#39;):
+        run(&#39;uptime&#39;)
+        run(&#39;uname -a&#39;)</code></pre></li>
+<li>Have whatever is calling your script (<code>cron</code> etc) call <code>workon</code> first.</li>
+<li>Specify your virtualenv’s Python interpreter directly in the script’s bangline.<br /></li>
+<li><p>Use a bash script as a wrapper. Ugly, but sometimes convenient.</p></li>
+</ul>
+</body>
+</html>

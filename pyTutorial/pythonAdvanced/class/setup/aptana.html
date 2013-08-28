@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
+<body>
+<h1 id="aptana-studio">Aptana Studio</h1>
+<p>Aptana Studio is an IDE - integrated development environment - based on Eclipse. It provides powerful tools for exploring, understanding, and refactoring your code.</p>
+<p>Aptana’s Python support was formerly a separate Eclipse plugin called <em>PyDev</em>. PyDev was purchased by Aptana and folded into Aptana Studio. Aptana can be installed as a seperate download, or as an Eclipse plugin. For convenience we will download the whole application.</p>
+<ul>
+<li>see: <a href="http://aptana.com/products/studio3/download">Download Aptana</a></li>
+</ul>
+<h2 id="workspace">Workspace</h2>
+<p>When it starts up, Aptana will ask you what folder you want to use as a workspace. I don’t like workspaces and tend to ignore it. A good default is <code>~/workspace</code>.</p>
+<h2 id="installing-eclipse-plugins">Installing Eclipse Plugins</h2>
+<p>Each Eclipse plugin has an <em>Update Site</em> URL, from which it can be installed.</p>
+<p>To install a plugin in Eclipse, choose <code>Install New Software...</code> from the <code>Help</code> menu. Click the <code>Add...</code> button to add a new plugin repository. Put the plugin’s <em>Update Site</em> URL in the <code>Location:</code> field.</p>
+<p>Once you have added the plugin repository, check the box of the plugin you want to install. Click <code>Next &gt;</code>, then click thru until it is installed. Normally Eclipse will want to restart itself after a new plugin has been installed.</p>
+<h2 id="python-perspective">Python Perspective</h2>
+<p>Eclipse refers to collections of windows (<em>views</em> in Eclipse terminology) and their arrangement on screen as a <em>perspective</em>. There is a Python perspective available, pre-configured with the views one typically wants while working on Python code.</p>
+<p>You can select the Python perspective by going to the <em>perspective menu</em> - it is in the upper right corner of the window, and looks like a grid with a plus sign. Click on it, select “Other…”, and choose “PyDev Perspective” from the ensuing dialog.</p>
+<p>You will now be in the Python perspective.</p>
+<h2 id="working-with-virtual-environments">Working with Virtual Environments</h2>
+<p>Unfortunately, Aptana is not aware of virtual environments by default. This can be worked around by manually configuring Aptana to use the Python interpreter from the virtual environment. We will configure the interpreter in the course of starting a new project below.</p>
+<h2 id="starting-a-new-project">Starting a New Project</h2>
+<p>Start a new project by clicking on the new project menu - it looks like a window with a plus sign - in the upper left corner of the window. Click on the new project menu, and select “PyDev Project”.</p>
+<p>A new project dialog will appear. Fill in the name you want for your project, then click on the blue “Please configure an interpreter” link.</p>
+<p>You will be taken to Eclipse’s Python interpreter settings page.</p>
+<p>Click the “New…” button. A select file dialog will open; go to your home folder. Once there, right-click on the file list, and choose “Show Hidden Files” from the context menu.</p>
+<p>Click thru to select the <code>python</code> executable at <code>~/.virtualenvs/class/bin/python</code>.</p>
+<p>Click OK, and you will return to the Select Interpreter dialog.</p>
+<p>Click “OK”, and you will return to the PyDev Project dialog. From the “Interpreter” popup menu, choose “class”, the virtualenv we just configured.</p>
+<p>Click “Finish” and you will have successfully created a new project! Your new project will now be visible in the Project Explorer view.</p>
+</body>
+</html>

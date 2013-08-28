@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <meta charset="UTF-8">
+        <title>Python Advanced</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <link rel="stylesheet" href="http://jeremyosborne.com/class/reveal/css/reveal.min.css">
+        <link rel="stylesheet" href="http://jeremyosborne.com/class/reveal/css/theme/default.css" id="theme">
+        <!-- For syntax highlighting of code. -->
+        <link rel="stylesheet" href="http://jeremyosborne.com/class/reveal/css/zenburn.css">
+    </head>
+    <body>
+        
+        <div class="reveal">
+            <div class="slides">
+
+<!-- A section contained within the .reveal > .slides container is a single slide. -->
+<section>
+    <h2>Python Advanced</h2>
+    <ul>
+        <li>Instructor: Jeremy Osborne</li>
+        <li>Email: jeremywosborne@gmail.com</li>
+        <li>Phone: 408-655-3155</li>
+        <br/>
+        <br/>
+        <p>
+Please download the following files:
+        </p>
+        <p style="word-wrap: break-word; word-break: break-all;">
+https://dl.dropboxusercontent.com/u/34641775/classes/pythonAdvanced.zip
+        </p>
+    </ul>
+</section>
+
+<section>
+    <h2>Logistics</h2>
+    <ul>
+        <li>This is a 2 day course, each day starting at 9am.</li>
+        <li>Breaks:</li>
+        <ul>
+            <li>~10:30am (~15 minutes)</li>
+            <li>~Noon (~1 hour)</li>
+            <li>~2:00pm (~15 minutes)</li>
+        </ul>
+        <li>End time: no later than 4pm.</li>
+        <li>Questions, big or small, are welcome at anytime.</li>
+        <li>The class will consist of kung fu exercises, code walkthroughs, discussions, and labs.</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Expectations and Assumptions</h2>
+    <ul>
+        <li>Solid understanding of Python language syntax and conventions.</li>
+        <li>Familiarity with Linux command line.</li>
+        <li>Familiarity with web concepts such as HTML syntax, HTTP requests and responses, APIs, etc.</li>
+        <li>Familiarity with database concepts.</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Agenda</h2>
+    <ul>
+        <li>Setup</li>
+        <li>Review of functional programming in Python</li>
+        <li>Review of object-oriented programming in Python</li>
+        <li>Object relational mapping</li>
+        <li>Working with REST requests</li>
+        <li>Remote system admin</li>
+        <li>Web applications</li>
+    </ul>
+</section>
+
+            </div>
+        </div>
+
+        <!-- Below is the control code for Reveal. -->
+        <script src="http://jeremyosborne.com/class/reveal/lib/head.min.js"></script>
+        <script src="http://jeremyosborne.com/class/reveal/lib/reveal.min.js"></script>
+        <script>
+            // Full list of configuration options available here:
+            // https://github.com/hakimel/reveal.js#configuration
+            Reveal.initialize({
+                controls: true,
+                progress: true,
+                history: true,
+                center: true,
+
+                // available themes are in /css/theme
+                theme: Reveal.getQueryHash().theme, 
+                // default/cube/page/concave/zoom/linear/fade/none
+                transition: Reveal.getQueryHash().transition || 'default', 
+
+                // Optional libraries used to extend on reveal.js
+                dependencies: [
+                    { src: 'http://jeremyosborne.com/class/reveal/lib/classList.js', condition: function() { return !document.body.classList; } },
+                    { src: 'http://jeremyosborne.com/class/reveal/lib/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+                ]
+            });
+        </script>
+    </body>
+</html>

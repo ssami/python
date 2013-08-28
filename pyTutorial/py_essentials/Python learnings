@@ -1,0 +1,39 @@
+Python learnings
+
+1. dir() 
+2. dir(module)
+3. help(math) 
+4. Doc string: first string 
+5. Remember! You need to convert between types! Python is considered strongly typed so it doesn't do string-int conversions automatically
+6. Lists are not arrays
+7. if __name__ == "__main__":
+8. Two underscores: python special variables: don't make new ones on your own
+9. Python doesn't use global variables
+9. Lists in parentheses are tuples: immutable and can be unpacked into variables
+	9a. a, b, c = tuple
+10. Sets work just like Math
+11. No increments/decrements: sum += 1
+12. Strings with r will help you escape characters! This is great in creating regex patterns
+13. Counter! from collections import Counter
+14. Slices: list[10:20:2] - from 10 to 20 objects, every other object. Last 10 objects, list[-5:]
+15. No such thing as global scope!
+16. No block scoping! Only def: function scoping
+17. Two ways to initialize dictionaries: 
+	a = {
+    'a': 'value',
+    'another': 'value',
+}
+
+b = dict( 
+    a='value',
+    another='value',
+)
+18. Self is passed in automatically when calling a function
+19. if name == main: makes sure that nothing runs immediately when you import
+20. Running something with if name == main: call it as python <classname>.py
+21. Make sure every method has self!
+22. 
+
+
+Python Advanced learnings
+

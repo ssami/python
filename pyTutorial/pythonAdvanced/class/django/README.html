@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; }
+code > span.dt { color: #204a87; }
+code > span.dv { color: #0000cf; }
+code > span.bn { color: #0000cf; }
+code > span.fl { color: #0000cf; }
+code > span.ch { color: #4e9a06; }
+code > span.st { color: #4e9a06; }
+code > span.co { color: #8f5902; font-style: italic; }
+code > span.ot { color: #8f5902; }
+code > span.al { color: #ef2929; }
+code > span.fu { color: #000000; }
+code > span.er { font-weight: bold; }
+  </style>
+</head>
+<body>
+<h1 id="web-applications-with-django">Web Applications with Django</h1>
+<p>Django is a web application framework. One would use django for when you need something more than a simple web page: a web based todo list, you want to write your own blog engine, a dynamic social feed, an interactive family tree for your family, etc.</p>
+<p>There are many frameworks out there. Django is a big one, and a well supported one, in the Python community. Whether or not you specifically use Django after the class, working with Django will give you an idea of how to roll your own web application should you need to. If you do not do a lot of work on the web, it will also give you a chance to hone your web skills.</p>
+<ul>
+<li>see <a href="https://www.djangoproject.com/">Django homepage</a></li>
+<li>see <a href="https://docs.djangoproject.com/en/1.5/intro/tutorial01/">Django tutorial</a></li>
+</ul>
+<h2 id="note-on-folder-organization">Note on folder organization</h2>
+<p>While each piece of Django is well constructed and easy to understand, Django itself is large and has a lot of depth to it. In this case, the <code>examples</code> folder contains the finished version of what we’re going to build, as reference. We will implement small pieces of our application over the example, testing along the way. This will allow us to explore the major pieces of Django, how they work, and what we can use them for, while cutting down on the number of potential typos due to the shear amount of code.</p>
+<h2 id="prequisites">Prequisites</h2>
+<p>Django, like many frameworks, can be a bit specific about what code they allow, and what they depricate, between versions. These examples are based on the following specific version of Django:</p>
+<pre><code>pip install django==1.5.1
+# This code is part of the Django community:
+pip install django-registration==1.0</code></pre>
+<ul>
+<li>see <a href="https://docs.djangoproject.com/en/1.5/topics/install/">Django install</a></li>
+<li>see <a href="https://django-registration.readthedocs.org/en/v1.0/">Django registration application</a></li>
+</ul>
+<h2 id="what-we-are-building-a-bulletin-board">What we are building: a “bulletin board”</h2>
+<p>In the “old days” bulletin boards were where people stuck notes. We’re going to make a bulletin board that allows pepole to leave notes for us. This project will not only give us an overview of Django, it will provide an opportunity to learn about the various topics we need to think about when developing a web application.</p>
+<p>To see our final product, let’s go into <code>examples/bulletin</code> and run the following command:</p>
+<pre><code>python manage.py runserver</code></pre>
+<p>Take a walkthrough of our sample application at:</p>
+<pre><code>http://localhost:8000/</code></pre>
+<h2 id="getting-started">Getting Started</h2>
+<p>Django expects you to structure your code in a particular way. The <code>django-admin.py</code> tool can be used to get us going with the boiler plate code for our project. Let’s build the scaffolding for our project:</p>
+<pre><code>django-admin.py startproject bulletin</code></pre>
+<p>NOTE: If you have trouble running django-admin.py on Windows, try running it literally. Depending on your Python install, the command above might look like:</p>
+<pre><code>python c:\Python27\Scripts\django-admin.py startproject bulletin</code></pre>
+<p>This should give us a directory that looks something like:</p>
+<pre><code>bulletin/
+    manage.py
+    bulletin/
+        __init__.py
+        settings.py
+        urls.py
+        wsgi.py</code></pre>
+<p>We have a barebones web application. Most commands will be run from inside of the root <code>bulletin</code> directory from here on out, and we’ll do quite a bit from the commandline. Let’s do the following and see what happens:</p>
+<pre><code>cd bulletin
+python manage.py runserver</code></pre>
+<p>Open a web browser and visit our hello world application at:</p>
+<pre><code>http://127.0.0.1:8000/</code></pre>
+<p>Yay!</p>
+<h2 id="configuring-our-server">Configuring our server</h2>
+<p>Files will always be referred to as if we’re already inside of the root <code>bulletin</code> directory. Open the <code>bulletin/settings.py</code> file in an editor and make the following changes noted in the <code>#CHANGEME</code> comments:</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Django settings for bulletin project.</span>
+
+DEBUG = <span class="ot">True</span>
+TEMPLATE_DEBUG = DEBUG
+
+ADMINS = (
+    <span class="co"># (&#39;Your Name&#39;, &#39;your_email@example.com&#39;),</span>
+)
+
+MANAGERS = ADMINS
+
+DATABASES = {
+    <span class="co">&#39;default&#39;</span>: {
+        <span class="co"># CHANGEME - use a simple backend for now.</span>
+        <span class="co">&#39;ENGINE&#39;</span>: <span class="st">&#39;django.db.backends.sqlite3&#39;</span>, <span class="co"># Add &#39;postgresql_psycopg2&#39;, &#39;mysql&#39;, &#39;sqlite3&#39; or &#39;oracle&#39;.</span>
+        <span class="co"># CHANGEME - name the database.</span>
+        <span class="co">&#39;NAME&#39;</span>: <span class="st">&#39;bulletin.db3&#39;</span>,                      <span class="co"># Or path to database file if using sqlite3.</span>
+        <span class="co"># The following settings are not used with sqlite3:</span>
+        <span class="co">&#39;USER&#39;</span>: <span class="st">&#39;&#39;</span>,
+        <span class="co">&#39;PASSWORD&#39;</span>: <span class="st">&#39;&#39;</span>,
+        <span class="co">&#39;HOST&#39;</span>: <span class="st">&#39;&#39;</span>,                      <span class="co"># Empty for localhost through domain sockets or &#39;127.0.0.1&#39; for localhost through TCP.</span>
+        <span class="co">&#39;PORT&#39;</span>: <span class="st">&#39;&#39;</span>,                      <span class="co"># Set to empty string for default.</span>
+    }
+}</code></pre>
+<p>Let’s see if things work. There is a <code>manage.py</code> script that we just used to start the server. Let’s use it to create our database and create our admin user.</p>
+<pre><code>python manage.py syncdb</code></pre>
+<p>When asked if you want to create a superuser, say yes. Create the following user (to make things easy to remember):</p>
+<pre><code>name: root
+email: root@devnull.com
+password: password</code></pre>
+<p>Excellent!</p>
+<p>Let’s make a couple more changes to <code>bulletin/settings.py</code>:</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># snip....</span>
+INSTALLED_APPS = (
+    <span class="co">&#39;django.contrib.auth&#39;</span>,
+    <span class="co">&#39;django.contrib.contenttypes&#39;</span>,
+    <span class="co">&#39;django.contrib.sessions&#39;</span>,
+    <span class="co">&#39;django.contrib.sites&#39;</span>,
+    <span class="co">&#39;django.contrib.messages&#39;</span>,
+    <span class="co">&#39;django.contrib.staticfiles&#39;</span>,
+    <span class="co"># Uncomment the next line to enable the admin:</span>
+    <span class="co"># CHANGEME: uncomment.</span>
+    <span class="co">&#39;django.contrib.admin&#39;</span>,
+    <span class="co"># Uncomment the next line to enable admin documentation:</span>
+    <span class="co"># CHANGEME: uncomment.</span>
+    <span class="co">&#39;django.contrib.admindocs&#39;</span>,
+)
+<span class="co"># snip...</span></code></pre>
+<p>And a change to <code>bulletin/urls.py</code>:</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="ch">from</span> django.conf.urls <span class="ch">import</span> patterns, include, url
+
+<span class="co"># Uncomment the next two lines to enable the admin:</span>
+<span class="co"># CHANGEME uncomment</span>
+<span class="ch">from</span> django.contrib <span class="ch">import</span> admin
+admin.autodiscover()
+
+urlpatterns = patterns(<span class="st">&#39;&#39;</span>,
+    <span class="co"># Examples:</span>
+    <span class="co"># url(r&#39;^$&#39;, &#39;bulletin.views.home&#39;, name=&#39;home&#39;),</span>
+    <span class="co"># url(r&#39;^bulletin/&#39;, include(&#39;bulletin.foo.urls&#39;)),</span>
+
+    <span class="co"># Uncomment the admin/doc line below to enable admin documentation:</span>
+    <span class="co"># CHANGEME uncomment</span>
+    url(<span class="st">r&#39;^admin/doc/&#39;</span>, include(<span class="st">&#39;django.contrib.admindocs.urls&#39;</span>)),
+
+    <span class="co"># Uncomment the next line to enable the admin:</span>
+    <span class="co"># CHANGEME uncomment</span>
+    url(<span class="st">r&#39;^admin/&#39;</span>, include(admin.site.urls)),
+)</code></pre>
+<p>The <code>bulletin/urls.py</code> file is important for determining how our application reacts to URLs as part of the HTTP request. Many frameworks refer to url interpretation as routing, and the url patterns themselves as routes. We will return to this file later.</p>
+<p>Let’s test out our application now:</p>
+<pre><code>python manage.py runserver</code></pre>
+<p>And visit <code>http://127.0.0.1:8000/</code> in a web browser. Not much has changed. Let’s try visiting the admin page at:</p>
+<pre><code>http://127.0.0.1:8000/admin</code></pre>
+<p>Ahh, some things have changed. We’ve activated our admin control panel. Log in with your superuser name that you created, which is hopefully <code>root</code> and <code>password</code>.</p>
+<p>Click around. One thing that Django is known for is all of the builtin stuff, like a full admin console that is ready to go before our app is.</p>
+<p>The admin console is turned off by default, and given the power, you can probably see why.</p>
+<h2 id="what-is-an-app">What is an App</h2>
+<p>Django has the concept of projects and apps.</p>
+<ul>
+<li>A project is equivalent to an entire website.</li>
+<li>The project provides overall configuration: settings.py, urls.py, management via manage.py, etc.</li>
+<li>An application is a single, macro feature that is part of an entire website.</li>
+<li>Apps are pluggable/removeable, fitting with the dynamic nature of python.</li>
+<li>A project might have a single app, but can also have multiple applications that fit together to make one complete project (website).</li>
+</ul>
+<p>The app layer is where we have the most power in Django. We already saw our first app: the admin page. But we don’t want to expose the admin page to the world as our main app. We also installed the <code>django-registration</code> app when we first started.</p>
+<p>An app is made up of two main conceptual parts: the model layer, which is our database layer; the view layer, which provides the logic for interpreting requests and returns a response, usually a web page, to the requester.</p>
+<h2 id="users-and-user-registration">Users and user registration</h2>
+<p>We’ll want users to be able to login to our application to add notes to our board. Let’s configure the <code>django-registration</code> app to work for us, but using a simple and toned down version. We must tell Django to use our application within <code>bulletin/settings.py</code>:</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># snip....</span>
+INSTALLED_APPS = (
+    <span class="co">&#39;django.contrib.auth&#39;</span>,
+    <span class="co">&#39;django.contrib.contenttypes&#39;</span>,
+    <span class="co">&#39;django.contrib.sessions&#39;</span>,
+    <span class="co">&#39;django.contrib.sites&#39;</span>,
+    <span class="co">&#39;django.contrib.messages&#39;</span>,
+    <span class="co">&#39;django.contrib.staticfiles&#39;</span>,
+    <span class="co"># Uncomment the next line to enable the admin:</span>
+    <span class="co">&#39;django.contrib.admin&#39;</span>,
+    <span class="co"># Uncomment the next line to enable admin documentation:</span>
+    <span class="co">&#39;django.contrib.admindocs&#39;</span>,
+    
+    <span class="co"># CHANGEME: add registration module.</span>
+    <span class="co">&#39;registration&#39;</span>,
+    <span class="co"># CHANGEME: here&#39;s the other module we&#39;re about to make to handle</span>
+    <span class="co"># the registration.</span>
+    <span class="co">&#39;simpleauth&#39;</span>,
+)
+
+<span class="co"># CHANGEME: redirect successful logins to the homepage, too.</span>
+LOGIN_REDIRECT_URL = <span class="st">&#39;/&#39;</span>
+
+<span class="co"># snip...</span></code></pre>
+<p>And in <code>bulletin/urls.py</code>:</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="ch">from</span> django.conf.urls <span class="ch">import</span> patterns, include, url
+
+<span class="co"># Uncomment the next two lines to enable the admin:</span>
+<span class="ch">from</span> django.contrib <span class="ch">import</span> admin
+admin.autodiscover()
+
+<span class="co"># CHANGEME include our new application.</span>
+<span class="ch">from</span> simpleauth.views <span class="ch">import</span> SimpleAuthRegistrationView
+<span class="co"># CHANGME include code to help us login and logout.</span>
+<span class="ch">from</span> django.contrib.auth <span class="ch">import</span> views <span class="ch">as</span> auth_views
+
+urlpatterns = patterns(<span class="st">&#39;&#39;</span>,
+    <span class="co"># Examples:</span>
+    <span class="co"># url(r&#39;^$&#39;, &#39;bulletin.views.home&#39;, name=&#39;home&#39;),</span>
+    <span class="co"># url(r&#39;^bulletin/&#39;, include(&#39;bulletin.foo.urls&#39;)),</span>
+
+    <span class="co"># Uncomment the admin/doc line below to enable admin documentation:</span>
+    url(<span class="st">r&#39;^admin/doc/&#39;</span>, include(<span class="st">&#39;django.contrib.admindocs.urls&#39;</span>)),
+
+    <span class="co"># Uncomment the next line to enable the admin:</span>
+    url(<span class="st">r&#39;^admin/&#39;</span>, include(admin.site.urls)),
+
+    <span class="co"># CHANGEME allow registration and authentication.</span>
+    url(<span class="st">r&#39;^register/$&#39;</span>, SimpleAuthRegistrationView.as_view(), name=<span class="st">&#39;registration_register&#39;</span>),
+    url(<span class="st">r&#39;^login/$&#39;</span>, auth_views.login, {<span class="st">&#39;template_name&#39;</span>: <span class="st">&#39;registration/login.html&#39;</span>}, name=<span class="st">&#39;auth_login&#39;</span>),
+    url(<span class="st">r&#39;^logout/$&#39;</span>, auth_views.logout, {<span class="st">&#39;template_name&#39;</span>: <span class="st">&#39;registration/logout.html&#39;</span>}, name=<span class="st">&#39;auth_logout&#39;</span>),
+
+)</code></pre>
+<p>Whenever we add an application, we need to setup our database to make use of the models within that application. Run the following commands:</p>
+<pre><code>python manage.py syncdb
+python manage.py runserver</code></pre>
+<p>Doh? What happened? Looks like we got ahead of ourselves. The <code>django-registration</code> module provides a lot of help, but we need to help ourselves, too, and supply some of our own code.</p>
+<h2 id="authentication-and-templates-and-views">Authentication, and Templates, and views</h2>
+<p>Django differentiates views, which are the python code that manage the logic for a particular HTTP request, and templates, which are the HTML pages and HTML fragments that are displayed to the user. To allow a user to register, we need to subclass one of the <code>django-registration</code> views and override some things.</p>
+<p>Let’s create our first application: one that will be responsible for allowing user registration and authentication.</p>
+<pre><code>python manage.py startapp simpleauth</code></pre>
+<p>Excellent. Let’s create our first view, which is the missing view that caused the error in <code>bulletin/urls.py</code> above. Open up <code>simpleauth/views.py</code> and:</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Importing from the django-registration package.</span>
+<span class="co"># We&#39;re going to use the one step registration process, not the</span>
+<span class="co"># two step registration process.</span>
+<span class="ch">from</span> registration.backends.simple.views <span class="ch">import</span> RegistrationView
+
+<span class="co"># We inherit almost everything. The biggest thing that we want to</span>
+<span class="co"># override is where the user goes after they register.</span>
+<span class="kw">class</span> SimpleAuthRegistrationView(RegistrationView):
+    <span class="kw">def</span> get_success_url(<span class="ot">self</span>, request, user):
+        <span class="co"># Redirect the user to our home page.</span>
+        <span class="kw">return</span> <span class="st">&quot;/&quot;</span></code></pre>
+<p>The registration view handles the logic of the HTTP request, but the HTML that gets returned to the user still needs to be defined. Let’s make ourselves a templates directory at:</p>
+<pre><code>mkdir -p simpleauth/templates/registration</code></pre>
+<p>And let’s add the following files in the <code>simpleauth/templates/registration</code> folder, first <code>registration_form.html</code>:</p>
+<pre class="sourceCode djangotemplate"><code class="sourceCode djangotemplate"><span class="fu">{% extends </span><span class="st">&quot;registration/base.html&quot;</span><span class="fu"> %}</span>
+
+<span class="co">{% comment %}</span>
+<span class="co">**registration/registration_form.html**</span>
+<span class="co">Used to show the form users will fill out to register. By default, has</span>
+<span class="co">the following context:</span>
+
+<span class="co">``form``</span>
+<span class="co">    The registration form. This will be an instance of some subclass</span>
+<span class="co">    of ``django.forms.Form``; consult `Django&#39;s forms documentation</span>
+<span class="co">    &lt;http://docs.djangoproject.com/en/dev/topics/forms/&gt;`_ for</span>
+<span class="co">    information on how to display this in a template.</span>
+<span class="co">{% endcomment %}</span>
+
+<span class="fu">{% block content %}</span>
+
+<span class="kw">&lt;h1&gt;</span>Create new account<span class="kw">&lt;/h1&gt;</span>
+<span class="kw">&lt;form</span><span class="ot"> action=</span><span class="st">&quot;&quot;</span><span class="ot"> method=</span><span class="st">&quot;POST&quot;</span><span class="kw">&gt;</span>
+    <span class="fu">{% csrf_token %}</span>
+    <span class="kw">&lt;table&gt;</span>
+        <span class="fu">{{ form.as_table }}</span>
+    <span class="kw">&lt;/table&gt;</span>
+    <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">&quot;submit&quot;</span><span class="ot"> name=</span><span class="st">&quot;submit&quot;</span><span class="ot"> value=</span><span class="st">&quot;Submit&quot;</span><span class="kw">&gt;</span>
+<span class="kw">&lt;/form&gt;</span>
+
+<span class="fu">{% endblock %}</span></code></pre>
+<p>Followed by <code>base.html</code>:</p>
+<pre class="sourceCode djangotemplate"><code class="sourceCode djangotemplate"><span class="dt">&lt;!DOCTYPE </span>HTML<span class="dt">&gt;</span>
+<span class="kw">&lt;html</span><span class="ot"> lang=</span><span class="st">&quot;en-US&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;head&gt;</span>
+        <span class="kw">&lt;meta</span><span class="ot"> charset=</span><span class="st">&quot;utf-8&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;title&gt;</span>Bulletin<span class="kw">&lt;/title&gt;</span>
+        <span class="fu">{% block extra_head %}</span>
+        <span class="fu">{% endblock %}</span>
+    <span class="kw">&lt;/head&gt;</span>
+    <span class="kw">&lt;body&gt;</span>
+        <span class="kw">&lt;h1&gt;</span>Bulletin<span class="kw">&lt;/h1&gt;</span>
+        <span class="kw">&lt;div</span><span class="ot"> class=</span><span class="st">&quot;content&quot;</span><span class="kw">&gt;</span>
+            <span class="fu">{% block content %}</span>        
+            <span class="fu">{% endblock %}</span>
+        <span class="kw">&lt;/div&gt;</span>
+    <span class="kw">&lt;/body&gt;</span>
+<span class="kw">&lt;/html&gt;</span></code></pre>
+<p>And <code>login.html</code>:</p>
+<pre class="sourceCode djangotemplate"><code class="sourceCode djangotemplate"><span class="fu">{% extends </span><span class="st">&quot;registration/base.html&quot;</span><span class="fu"> %}</span>
+
+<span class="fu">{% block title %}</span>Log in<span class="fu">{% endblock %}</span>
+
+<span class="fu">{% block content %}</span>
+<span class="kw">&lt;h1&gt;</span>Log in<span class="kw">&lt;/h1&gt;</span>
+<span class="fu">{% if form.errors %}</span>
+<span class="kw">&lt;p</span><span class="ot"> class=</span><span class="st">&quot;error&quot;</span><span class="kw">&gt;</span>Please correct the errors below:<span class="kw">&lt;/p&gt;</span>
+<span class="fu">{% endif %}</span>
+<span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">&quot;post&quot;</span><span class="ot"> action=</span><span class="st">&quot;?next=</span><span class="fu">{{ next</span><span class="ot">|default:</span><span class="st">&quot;/&quot;</span><span class="ot"> </span><span class="fu">}}</span><span class="st">&quot;</span><span class="kw">&gt;</span>
+    <span class="fu">{% csrf_token %}</span>
+    <span class="kw">&lt;dl&gt;</span>
+        <span class="kw">&lt;dt&gt;</span>
+            <span class="kw">&lt;label</span><span class="ot"> for=</span><span class="st">&quot;id_username&quot;</span><span class="kw">&gt;</span>Username:<span class="kw">&lt;/label&gt;</span>
+            <span class="fu">{% if form.username.errors %}</span> <span class="kw">&lt;span</span><span class="ot"> class=</span><span class="st">&quot;error&quot;</span><span class="kw">&gt;</span><span class="fu">{{ form.username.errors</span><span class="ot">|join:</span><span class="st">&quot;, &quot;</span><span class="ot"> </span><span class="fu">}}</span><span class="kw">&lt;/span&gt;</span><span class="fu">{% endif %}</span>
+        <span class="kw">&lt;/dt&gt;</span>
+        <span class="kw">&lt;dd&gt;</span><span class="fu">{{ form.username }}</span><span class="kw">&lt;/dd&gt;</span>
+        <span class="kw">&lt;dt&gt;</span>
+            <span class="kw">&lt;label</span><span class="ot"> for=</span><span class="st">&quot;id_password&quot;</span><span class="kw">&gt;</span>Password:<span class="kw">&lt;/label&gt;</span>
+            <span class="fu">{% if form.password.errors %}</span> <span class="kw">&lt;span</span><span class="ot"> class=</span><span class="st">&quot;error&quot;</span><span class="kw">&gt;</span><span class="fu">{{ form.password.errors</span><span class="ot">|join:</span><span class="st">&quot;, &quot;</span><span class="ot"> </span><span class="fu">}}</span><span class="kw">&lt;/span&gt;</span><span class="fu">{% endif %}</span>
+        <span class="kw">&lt;/dt&gt;</span>
+        <span class="kw">&lt;dd&gt;</span><span class="fu">{{ form.password }}</span><span class="kw">&lt;/dd&gt;</span>
+        <span class="kw">&lt;dt&gt;</span>
+            <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">&quot;submit&quot;</span><span class="ot"> value=</span><span class="st">&quot;Log in&quot;</span> <span class="kw">/&gt;</span>
+        <span class="kw">&lt;/dt&gt;</span>
+    <span class="kw">&lt;/dl&gt;</span>
+<span class="kw">&lt;/form&gt;</span>
+<span class="fu">{% </span><span class="er">endblock</span><span class="fu"> %}</span>
+
+<span class="fu">{% block content-related %}</span>
+<span class="kw">&lt;p&gt;</span>If you don&#39;t have an account, you can <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;/register/&quot;</span><span class="kw">&gt;</span>sign up<span class="kw">&lt;/a&gt;</span> for one.
+<span class="fu">{% endblock %}</span></code></pre>
+<p>And <code>logout.html</code>:</p>
+<pre class="sourceCode djangotemplate"><code class="sourceCode djangotemplate"><span class="fu">{% extends </span><span class="st">&quot;registration/base.html&quot;</span><span class="fu"> %}</span>
+
+<span class="fu">{% block title %}</span>Logged out<span class="fu">{% endblock %}</span>
+
+<span class="fu">{% block content %}</span>
+<span class="kw">&lt;h1&gt;</span>You&#39;ve been logged out.<span class="kw">&lt;/h1&gt;</span>
+<span class="kw">&lt;p&gt;</span>Thanks for stopping by; when you come back, don&#39;t forget to <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;/login/&quot;</span><span class="kw">&gt;</span>log in<span class="kw">&lt;/a&gt;</span> again.<span class="kw">&lt;/p&gt;</span>
+<span class="fu">{% endblock %}</span></code></pre>
+<p>This introduces us to the Django templating language. There are many templating meta-languages/frameworks out there. All templating languages boil down to the same thing: they allow the user to insert dynamically generated content within existing, and generalized, static content (usually HTML).</p>
+<ul>
+<li>see <a href="https://docs.djangoproject.com/en/1.5/topics/templates/">Django Templating</a></li>
+</ul>
+<p>Try out what we have:</p>
+<pre><code>python manage.py runserver
+
+# Point a browser to
+http://localhost:8000/register/</code></pre>
+<p>Correctly registering will take us to a 404 because our application doesn’t exist. Just for fun, try logging in:</p>
+<pre><code>http://localhost:8000/login/</code></pre>
+<p>This will also take us to a 404 at root <code>/</code>, but that is good and proves our application will work. Let’s add the main part of our application: the notes.</p>
+<h2 id="our-own-custom-app-notes">Our own, custom app: notes</h2>
+<p>Our third party registration application handles registration. Our notes application, which we will develop ourselves, will manage the notes people leave on the bulletin board.</p>
+<pre><code>python manage.py startapp notes</code></pre>
+<h2 id="models---our-database-layer">Models - our database layer</h2>
+<p>Django, like SQLAlchemy, provides an ORM layer that allows us to model our objects, and as such our databases, using regular Python classes. This doesn’t mean that you can’t, or shouldn’t, use SQL, but it does cut out a layer that is present in many older web applications without ORM:</p>
+<ul>
+<li>Build a bunch of SQL statements.</li>
+<li>Protect your SQL statements from attacks.</li>
+<li>Build data models that represent your database records within your code.</li>
+</ul>
+<p>The SQL is still executed in the background, but we don’t need to write it into our code if we don’t want to.</p>
+<ul>
+<li>see <a href="https://docs.djangoproject.com/en/1.5/topics/db/models/">Django Model Documentation</a></li>
+</ul>
+<p>Open up <code>notes/models.py</code> and make the following changes:</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="ch">from</span> django.db <span class="ch">import</span> models
+<span class="co"># CHANGEME: Notes models need authors.</span>
+<span class="ch">from</span> django.contrib.auth.models <span class="ch">import</span> User
+<span class="co"># CHANGME: To auto set dates.</span>
+<span class="ch">from</span> datetime <span class="ch">import</span> datetime
+
+<span class="kw">class</span> Note(models.Model):
+    <span class="co">&quot;&quot;&quot;A single note on our bulletin board.</span>
+<span class="co">    &quot;&quot;&quot;</span>
+    <span class="co"># Not shown: all models have an id field by default.</span>
+    <span class="co"># Who wrote the note.</span>
+    author = models.ForeignKey(User)
+    <span class="co"># When the note was written, defaulting to the callback now.</span>
+    date = models.DateField(<span class="st">&#39;creation date&#39;</span>, default=datetime.now)
+    <span class="co"># All notes must have unique titles.</span>
+    title = models.CharField(max_length=<span class="dv">200</span>, unique=<span class="ot">True</span>, help_text=<span class="st">&#39;Each note title must be unique.&#39;</span>)
+    <span class="co"># The body of the note.</span>
+    body = models.TextField(help_text=<span class="st">&#39;Write as much as you want.&#39;</span>)</code></pre>
+<p>This code change also represents a structural change to our database. When we have new tables to create, we need to run:</p>
+<pre><code>python manage.py syncdb</code></pre>
+<p>Ooops. Our application isn’t yet recognized by Django. Let’s open <code>bulletin/settings.py</code> and have Django work with our app:</p>
+<pre class="sourceCode python"><code class="sourceCode python">INSTALLED_APPS = (
+    <span class="co">&#39;django.contrib.auth&#39;</span>,
+    <span class="co">&#39;django.contrib.contenttypes&#39;</span>,
+    <span class="co">&#39;django.contrib.sessions&#39;</span>,
+    <span class="co">&#39;django.contrib.sites&#39;</span>,
+    <span class="co">&#39;django.contrib.messages&#39;</span>,
+    <span class="co">&#39;django.contrib.staticfiles&#39;</span>,
+    <span class="co"># Uncomment the next line to enable the admin:</span>
+    <span class="co">&#39;django.contrib.admin&#39;</span>,
+    <span class="co"># Uncomment the next line to enable admin documentation:</span>
+    <span class="co">&#39;django.contrib.admindocs&#39;</span>,
+    
+    <span class="co">&#39;registration&#39;</span>,
+    <span class="co">&#39;simpleauth&#39;</span>,
+    <span class="co"># CHANGEME: Recognize our notes application.</span>
+    <span class="co">&#39;notes&#39;</span>,
+)</code></pre>
+<p>And let’s try this again:</p>
+<pre><code>python manage.py syncdb</code></pre>
+<p>It’s subtle, but we should have seen a <code>notes_note</code> table get created. Excellent!</p>
+<h2 id="creating-a-few-test-models">Creating a few test models</h2>
+<p>By default, the admin view has access to only the tables we allow it to have access to. Let’s create a <code>notes/admin.py</code> file and add the following to it:</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="ch">from</span> django.contrib <span class="ch">import</span> admin
+<span class="ch">from</span> notes.models <span class="ch">import</span> Note
+
+admin.site.register(Note)</code></pre>
+<p>Restart the development server:</p>
+<pre><code>python manage.py runserver</code></pre>
+<p>And visit the admin page at:</p>
+<pre><code>http://localhost:8000/admin</code></pre>
+<p>Use the admin interface to do a couple of things:</p>
+<ul>
+<li>Check out the user table and make sure a user that you registered earlier exists (click on the change button).</li>
+<li>Add a few notes to the notes table (click on the add button).</li>
+</ul>
+<p>Excellent! Now we have some data to work with.</p>
+<p>Bonus: If you are facile with sqlite3, feel free to use the client to open up our database file and browse the database. You can confirm that our models are being saved, and they look like one would expect in an SQL database. Please don’t change the data directly though (at least right now).</p>
+<h2 id="building-our-homepage-view-and-first-template">Building our homepage view and first template</h2>
+<p>We could have built the homepage first, but it would have been empty. We now have the infrastructure we need to finish our application. Let’s start with our homepage.</p>
+<p>When HTTP requests come in, Django first needs to decide where to send them to. They’re always routed to some function or method. Let’s modify <code>bulletin/urls.py</code>:</p>
+<pre class="sourceCode python"><code class="sourceCode python">urlpatterns = patterns(<span class="st">&#39;&#39;</span>,
+    <span class="co"># Examples:</span>
+    <span class="co"># url(r&#39;^$&#39;, &#39;bulletin.views.home&#39;, name=&#39;home&#39;),</span>
+    <span class="co"># url(r&#39;^bulletin/&#39;, include(&#39;bulletin.foo.urls&#39;)),</span>
+
+    <span class="co"># Uncomment the admin/doc line below to enable admin documentation:</span>
+    url(<span class="st">r&#39;^admin/doc/&#39;</span>, include(<span class="st">&#39;django.contrib.admindocs.urls&#39;</span>)),
+
+    <span class="co"># Uncomment the next line to enable the admin:</span>
+    url(<span class="st">r&#39;^admin/&#39;</span>, include(admin.site.urls)),
+
+    url(<span class="st">r&#39;^register/$&#39;</span>, SimpleAuthRegistrationView.as_view(), name=<span class="st">&#39;registration_register&#39;</span>),
+    url(<span class="st">r&#39;^login/$&#39;</span>, auth_views.login, {<span class="st">&#39;template_name&#39;</span>: <span class="st">&#39;registration/login.html&#39;</span>}, name=<span class="st">&#39;auth_login&#39;</span>),
+    url(<span class="st">r&#39;^logout/$&#39;</span>, auth_views.logout, {<span class="st">&#39;template_name&#39;</span>: <span class="st">&#39;registration/logout.html&#39;</span>}, name=<span class="st">&#39;auth_logout&#39;</span>),
+
+    <span class="co"># CHANGEME: Our homepage is managed by the notes app.</span>
+    url(<span class="st">r&#39;^$&#39;</span>, <span class="st">&#39;notes.views.index&#39;</span>, name=<span class="st">&#39;home&#39;</span>),
+)</code></pre>
+<p>We’ve informed django to send all root path <code>/</code> requests to the function named <code>home</code> in <code>notes.views</code>. We’ve identified this route by the name of “home”, although for our simple application this isn’t really necesary.</p>
+<ul>
+<li>see <a href="https://docs.djangoproject.com/en/1.5/topics/http/urls/">Django URL dispatcher</a></li>
+</ul>
+<p>Let’s open <code>notes.views</code> and build our first view:</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="ch">from</span> django.shortcuts <span class="ch">import</span> render
+
+<span class="ch">from</span> notes.models <span class="ch">import</span> Note
+
+<span class="kw">def</span> index(request):
+    context = {
+        <span class="co"># Get all of the notes in the database, in descending order.</span>
+        <span class="co"># Instead of SQL, this is how Django provides a cross-database</span>
+        <span class="co"># query engine.</span>
+        <span class="co">&#39;notes&#39;</span>: Note.objects.<span class="dt">all</span>().order_by(<span class="st">&#39;-date&#39;</span>)
+    }
+    <span class="co"># Map our context object that we just built, with all of our models,</span>
+    <span class="co"># into our template. Whatever the results will be passed back as</span>
+    <span class="co"># the response to this particular HTTP request.</span>
+    <span class="kw">return</span> render(request, <span class="st">&#39;notes/index.html&#39;</span>, context)</code></pre>
+<p>We could always send straight text, but why do that when we have Django templates? Assuming you are within the root bulletin directory (next to manage.py), make the following directories:</p>
+<pre><code>mkdir -p notes/templates/notes</code></pre>
+<p>The reason for the double notes has to do with how Django searches for templates. Each app can have a templates folder, and it’s good to namespace an apps templates even within its own templates folder.</p>
+<p>Create the files <code>notes/templates/notes/index.html</code> and add the code within:</p>
+<pre class="sourceCode djangotemplate"><code class="sourceCode djangotemplate"><span class="co">{% comment %}</span>
+<span class="co">Display note cards if any notes exist in the database.</span>
+
+<span class="co">By default, has the following context:</span>
+
+<span class="co">* notes</span>
+<span class="co">    * List of all Note models.</span>
+<span class="co">{% endcomment %}</span>
+<span class="fu">{% if notes %}</span>
+    <span class="kw">&lt;h2&gt;</span><span class="fu">{{ notes</span><span class="ot">|length </span><span class="fu">}}</span> notes for you<span class="kw">&lt;/h2&gt;</span>
+<span class="co">{% comment %} Condensed formatting for notes due to inline-block styling. {% endcomment %}</span>
+<span class="fu">{% for note in notes %}</span><span class="kw">&lt;div</span><span class="ot"> class=</span><span class="st">&quot;note&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;h2&gt;</span><span class="fu">{{ note.title }}</span><span class="kw">&lt;/h2&gt;</span>
+    <span class="kw">&lt;p&gt;</span>
+        <span class="fu">{{ note.body }}</span>
+    <span class="kw">&lt;/p&gt;</span>
+    <span class="kw">&lt;small&gt;</span>created <span class="fu">{{ note.date }}</span> by <span class="fu">{{ note.author }}</span><span class="kw">&lt;/small&gt;</span>
+<span class="kw">&lt;/div&gt;</span><span class="fu">{% endfor %}</span>
+<span class="fu">{% else %}</span>
+    <span class="kw">&lt;h2&gt;</span>No notes for you<span class="kw">&lt;/h2&gt;</span>
+<span class="fu">{% </span><span class="er">endif</span><span class="fu"> %}</span></code></pre>
+<p>Excellent! Try out our simple home page now.</p>
+<pre><code>python manage.py runserver
+# then browse to http://localhost:8000/</code></pre>
+<p>Excellent! You have a page!</p>
+<h2 id="building-a-better-homepage">Building a better homepage</h2>
+<p>The templates that we used in the registration page were a bit better formed. Let’s change our template to be more like them and take a look at exactly what this provides us. Open up <code>notes/templates/notes/index.html</code> and drop in the new line at the top of the template:</p>
+<pre class="sourceCode djangotemplate"><code class="sourceCode djangotemplate"><span class="fu">{% extends </span><span class="st">&quot;notes/base.html&quot;</span><span class="fu"> %}</span>
+<span class="co">{% comment %} CHANGME: Inherit a base template. {% endcomment %}</span>
+
+<span class="co">{% comment %}</span>
+<span class="co">Display note cards if any notes exist in the database.</span>
+
+<span class="co">By default, has the following context:</span>
+
+<span class="co">* notes</span>
+<span class="co">    * List of all Note models.</span>
+<span class="co">{% endcomment %}</span>
+<span class="co">{% comment %} CHANGME: Add block tags. {% endcomment %}</span>
+<span class="fu">{% block content %}</span>
+<span class="fu">{% if notes %}</span>
+    <span class="kw">&lt;h2&gt;</span><span class="fu">{{ notes</span><span class="ot">|length </span><span class="fu">}}</span> notes for you<span class="kw">&lt;/h2&gt;</span>
+<span class="co">{% comment %} Condensed formatting for notes due to inline-block styling. {% endcomment %}</span>
+<span class="fu">{% for note in notes %}</span><span class="kw">&lt;div</span><span class="ot"> class=</span><span class="st">&quot;note&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;h2&gt;</span><span class="fu">{{ note.title }}</span><span class="kw">&lt;/h2&gt;</span>
+    <span class="kw">&lt;p&gt;</span>
+        <span class="fu">{{ note.body }}</span>
+    <span class="kw">&lt;/p&gt;</span>
+    <span class="kw">&lt;small&gt;</span>created <span class="fu">{{ note.date }}</span> by <span class="fu">{{ note.author }}</span><span class="kw">&lt;/small&gt;</span>
+<span class="kw">&lt;/div&gt;</span><span class="fu">{% endfor %}</span>
+<span class="fu">{% else %}</span>
+    <span class="kw">&lt;h2&gt;</span>No notes for you<span class="kw">&lt;/h2&gt;</span>
+<span class="fu">{% </span><span class="er">endif</span><span class="fu"> %}</span>
+<span class="fu">{% </span><span class="er">endblock</span><span class="fu"> %}</span></code></pre>
+<p>Now create the <code>notes\templates\notes\base.html</code> template with the following:</p>
+<pre class="sourceCode djangotemplate"><code class="sourceCode djangotemplate"><span class="dt">&lt;!DOCTYPE </span>HTML<span class="dt">&gt;</span>
+<span class="kw">&lt;html</span><span class="ot"> lang=</span><span class="st">&quot;en-US&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;head&gt;</span>
+        <span class="kw">&lt;meta</span><span class="ot"> charset=</span><span class="st">&quot;utf-8&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;title&gt;</span>Bulletin<span class="kw">&lt;/title&gt;</span>
+        <span class="fu">{% block extra_head %}</span>
+        <span class="fu">{% endblock %}</span>
+    <span class="kw">&lt;/head&gt;</span>
+    <span class="kw">&lt;body&gt;</span>
+        <span class="kw">&lt;h1&gt;</span>Bulletin<span class="kw">&lt;/h1&gt;</span>
+        <span class="kw">&lt;div</span><span class="ot"> class=</span><span class="st">&quot;content&quot;</span><span class="kw">&gt;</span>
+            <span class="fu">{% block content %}</span>        
+            <span class="fu">{% endblock %}</span>
+        <span class="kw">&lt;/div&gt;</span>
+    <span class="kw">&lt;/body&gt;</span>
+<span class="kw">&lt;/html&gt;</span></code></pre>
+<p>And test. This is one of those “if all goes well, everything looks the same.”</p>
+<p>Excellent. Now that things work, let’s make things a bit prettier. To deploy static files: css, images, JavaScript, etc… with our site, we want to be able to serve static files. Open <code>bulletin/settings.py</code> and make the following change:</p>
+<pre class="sourceCode djangotemplate"><code class="sourceCode djangotemplate"># URL prefix for static files.
+# Example: &quot;http://example.com/static/&quot;, &quot;http://static.example.com/&quot;
+STATIC_URL = &#39;/static/&#39;
+
+# Additional locations of static files
+STATICFILES_DIRS = (
+    # Put strings here, like &quot;/home/html/static&quot; or &quot;C:/www/django/static&quot;.
+    # Always use forward slashes, even on Windows.
+    # Don&#39;t forget to use absolute paths, not relative paths.
+    
+    # CHANGEME: Add a location for a main set of static files.
+    os.path.join(os.path.realpath(os.path.dirname(__file__)), &quot;static&quot;),
+)</code></pre>
+<p>Create the <code>static/</code> directory.</p>
+<p>Create <code>static/main.css</code> and add the following content to it:</p>
+<pre class="sourceCode css"><code class="sourceCode css">* <span class="kw">{</span>
+    <span class="kw">-moz-box-sizing:</span> <span class="dt">border-box</span><span class="kw">;</span>
+    <span class="kw">box-sizing:</span> <span class="dt">border-box</span><span class="kw">;</span>
+<span class="kw">}</span>
+html, body <span class="kw">{</span>
+    <span class="kw">margin:</span> <span class="dt">0</span><span class="kw">;</span>
+    <span class="kw">padding:</span> <span class="dt">0</span><span class="kw">;</span>
+<span class="kw">}</span>
+
+body &gt; h1 <span class="kw">{</span>
+    <span class="kw">padding:</span> <span class="dt">1em</span><span class="kw">;</span>
+    <span class="kw">background-color:</span> <span class="dt">#555</span><span class="kw">;</span>
+    <span class="kw">text-align:</span> <span class="dt">right</span><span class="kw">;</span>
+    <span class="kw">color:</span> <span class="dt">#eee</span><span class="kw">;</span>
+    <span class="kw">margin:</span> <span class="dt">0</span><span class="kw">;</span>
+<span class="kw">}</span>
+
+<span class="fl">.content</span> <span class="kw">{</span>
+    <span class="kw">width:</span> <span class="dt">80%</span><span class="kw">;</span>
+    <span class="kw">margin:</span> <span class="dt">auto</span><span class="kw">;</span>
+<span class="kw">}</span>
+
+<span class="fl">.content</span> &gt; h2 <span class="kw">{</span>
+    <span class="kw">text-align:</span> <span class="dt">center</span><span class="kw">;</span>
+<span class="kw">}</span>
+
+<span class="fl">.note</span> <span class="kw">{</span>
+    <span class="kw">display:</span> <span class="dt">inline-block</span><span class="kw">;</span>
+    <span class="kw">vertical-align:</span> <span class="dt">top</span><span class="kw">;</span>
+    
+    <span class="kw">width:</span> <span class="dt">18%</span><span class="kw">;</span>
+
+    <span class="kw">margin:</span> <span class="dt">1%</span><span class="kw">;</span>
+    <span class="kw">padding:</span> <span class="dt">0.3em</span><span class="kw">;</span>
+    
+    <span class="kw">overflow:</span> <span class="dt">auto</span><span class="kw">;</span>
+    <span class="kw">border:</span> <span class="dt">1px</span> <span class="dt">solid</span> <span class="dt">#aaa</span><span class="kw">;</span>
+<span class="kw">}</span>
+<span class="fl">.note</span> &gt; h2 <span class="kw">{</span>
+    <span class="kw">margin:</span> <span class="dt">0</span><span class="kw">;</span>
+    
+    <span class="kw">text-shadow:</span> <span class="dt">1px</span> <span class="dt">1px</span> <span class="dt">0</span> <span class="dt">#aaa</span><span class="kw">;</span>
+<span class="kw">}</span>
+<span class="fl">.note</span> &gt; p <span class="kw">{</span>
+    <span class="kw">min-height:</span> <span class="dt">10em</span><span class="kw">;</span>
+    <span class="kw">margin:</span> <span class="dt">0</span><span class="kw">;</span>
+    <span class="kw">color:</span> <span class="dt">#444</span><span class="kw">;</span>
+<span class="kw">}</span>
+<span class="fl">.note</span> &gt; small <span class="kw">{</span>
+    <span class="kw">display:</span> <span class="dt">block</span><span class="kw">;</span>
+    <span class="kw">text-align:</span> <span class="dt">right</span><span class="kw">;</span>
+    <span class="kw">padding:</span> <span class="dt">0.2em</span><span class="kw">;</span>
+    <span class="kw">color:</span> <span class="dt">#aaa</span><span class="kw">;</span>
+<span class="kw">}</span>
+
+
+
+<span class="dv">@media</span> <span class="dv">screen</span> <span class="er">and</span> <span class="er">(max-width:</span> <span class="er">960px)</span> <span class="dv">{</span>
+    <span class="fl">.note</span> <span class="kw">{</span>
+        <span class="kw">width:</span> <span class="dt">31%</span><span class="kw">;</span>
+    <span class="kw">}</span>
+<span class="dv">}</span>
+
+
+
+<span class="dv">@media</span> <span class="dv">screen</span> <span class="er">and</span> <span class="er">(max-width:</span> <span class="er">768px)</span> <span class="dv">{</span>
+    <span class="fl">.content</span> <span class="kw">{</span>
+        <span class="kw">width:</span> <span class="dt">88%</span><span class="kw">;</span>
+    <span class="kw">}</span>
+    <span class="fl">.note</span> <span class="kw">{</span>
+        <span class="kw">width:</span> <span class="dt">48%</span><span class="kw">;</span>
+    <span class="kw">}</span>
+<span class="dv">}</span>
+
+
+
+<span class="dv">@media</span> <span class="dv">screen</span> <span class="er">and</span> <span class="er">(max-width:</span> <span class="er">550px)</span> <span class="dv">{</span>
+    <span class="fl">.content</span> <span class="kw">{</span>
+        <span class="kw">width:</span> <span class="dt">96%</span><span class="kw">;</span>
+    <span class="kw">}</span>
+    <span class="fl">.note</span> <span class="kw">{</span>
+        <span class="kw">width:</span> <span class="dt">100%</span><span class="kw">;</span>
+    <span class="kw">}</span>
+<span class="dv">}</span></code></pre>
+<p>Modify <code>notes/templates/notes/base.html</code> to include the following:</p>
+<pre class="sourceCode djangotemplate"><code class="sourceCode djangotemplate"><span class="dt">&lt;!DOCTYPE </span>HTML<span class="dt">&gt;</span>
+<span class="kw">&lt;html</span><span class="ot"> lang=</span><span class="st">&quot;en-US&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;head&gt;</span>
+        <span class="kw">&lt;meta</span><span class="ot"> charset=</span><span class="st">&quot;utf-8&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;title&gt;</span>Bulletin<span class="kw">&lt;/title&gt;</span>
+        <span class="fu">{% block extra_head %}</span>
+        <span class="fu">{% endblock %}</span>
+        
+        <span class="co">{% comment %} CHANGEME: Add styling {% endcomment %}</span>
+        <span class="fu">{% load staticfiles %}</span>
+        <span class="kw">&lt;link</span><span class="ot"> href=</span><span class="st">&quot;</span><span class="fu">{% static </span><span class="st">&quot;main.css&quot;</span><span class="fu"> %}</span><span class="st">&quot;</span><span class="ot"> rel=</span><span class="st">&quot;stylesheet&quot;</span><span class="kw">/&gt;</span>
+    <span class="kw">&lt;/head&gt;</span>
+    <span class="kw">&lt;body&gt;</span>
+        <span class="kw">&lt;h1&gt;</span>Bulletin<span class="kw">&lt;/h1&gt;</span>
+        <span class="kw">&lt;div</span><span class="ot"> class=</span><span class="st">&quot;content&quot;</span><span class="kw">&gt;</span>
+            <span class="fu">{% block content %}</span>        
+            <span class="fu">{% endblock %}</span>
+        <span class="kw">&lt;/div&gt;</span>
+    <span class="kw">&lt;/body&gt;</span>
+<span class="kw">&lt;/html&gt;</span></code></pre>
+<p>Same thing for <code>simpleauth/templates/registration/base.html</code>:</p>
+<pre class="sourceCode djangotemplate"><code class="sourceCode djangotemplate"><span class="dt">&lt;!DOCTYPE </span>HTML<span class="dt">&gt;</span>
+<span class="kw">&lt;html</span><span class="ot"> lang=</span><span class="st">&quot;en-US&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;head&gt;</span>
+        <span class="kw">&lt;meta</span><span class="ot"> charset=</span><span class="st">&quot;utf-8&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;title&gt;</span>Bulletin<span class="kw">&lt;/title&gt;</span>
+        <span class="fu">{% block extra_head %}</span>
+        <span class="fu">{% endblock %}</span>
+        
+        <span class="co">{% comment %} CHANGEME: Add styling {% endcomment %}</span>
+        <span class="fu">{% load staticfiles %}</span>
+        <span class="kw">&lt;link</span><span class="ot"> href=</span><span class="st">&quot;</span><span class="fu">{% static </span><span class="st">&quot;main.css&quot;</span><span class="fu"> %}</span><span class="st">&quot;</span><span class="ot"> rel=</span><span class="st">&quot;stylesheet&quot;</span><span class="kw">/&gt;</span>
+    <span class="kw">&lt;/head&gt;</span>
+    <span class="kw">&lt;body&gt;</span>
+        <span class="kw">&lt;h1&gt;</span>Bulletin<span class="kw">&lt;/h1&gt;</span>
+        <span class="kw">&lt;div</span><span class="ot"> class=</span><span class="st">&quot;content&quot;</span><span class="kw">&gt;</span>
+            <span class="fu">{% block content %}</span>        
+            <span class="fu">{% endblock %}</span>
+        <span class="kw">&lt;/div&gt;</span>
+    <span class="kw">&lt;/body&gt;</span>
+<span class="kw">&lt;/html&gt;</span></code></pre>
+<p>This is a great time to check out the home page and the other pages like <code>login/</code>. They should look different.</p>
+<h2 id="adding-notes">Adding notes</h2>
+<p>We want to allow logged in users to be able to add notes. Create <code>notes/templates/notes/add.html</code> and add the contents to the file:</p>
+<pre class="sourceCode djangotemplate"><code class="sourceCode djangotemplate"><span class="fu">{% extends </span><span class="st">&quot;notes/base.html&quot;</span><span class="fu"> %}</span>
+
+<span class="co">{% comment %}</span>
+<span class="co">Allow logged in users to add notes.</span>
+
+<span class="co">Context properties expected:</span>
+
+<span class="co">* user: Should be provided by django.</span>
+<span class="co">* form: provided by view.</span>
+<span class="co">{% endcomment %}</span>
+
+<span class="fu">{% block content %}</span>
+<span class="fu">{% if user.is_authenticated %}</span>
+    <span class="kw">&lt;h2&gt;</span>Add a note<span class="kw">&lt;/h2&gt;</span>
+    <span class="kw">&lt;form</span><span class="ot"> action=</span><span class="st">&quot;</span><span class="fu">{% url </span><span class="st">&#39;add_note&#39;</span><span class="fu"> %}</span><span class="st">&quot;</span><span class="ot"> method=</span><span class="st">&quot;post&quot;</span><span class="kw">&gt;</span>
+        <span class="fu">{% csrf_token %}</span>
+        <span class="kw">&lt;table&gt;</span>
+            <span class="fu">{{ form.as_table }}</span>
+        <span class="kw">&lt;/table&gt;</span>
+        <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">&quot;submit&quot;</span><span class="ot"> value=</span><span class="st">&quot;add new note&quot;</span> <span class="kw">/&gt;</span>
+    <span class="kw">&lt;/form&gt;</span>
+<span class="fu">{% else %}</span>
+    <span class="kw">&lt;h2&gt;</span>Only logged in users can add notes.<span class="kw">&lt;/h2&gt;</span>
+<span class="fu">{% endif %}</span>
+<span class="fu">{% </span><span class="er">endblock</span><span class="fu"> %}</span></code></pre>
+<p>Append the following to <code>notes/views.py</code> (which isn’t the best practice in coding, especially importing below existing code, but it will do right now):</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># CHANGEME: Class based instead of functional based view.</span>
+<span class="ch">from</span> django <span class="ch">import</span> forms
+
+<span class="co"># A form that excludes fields we want to populate ourself via session data.</span>
+<span class="kw">class</span> NoteForm(forms.ModelForm):
+    <span class="kw">class</span> Meta:
+        model = Note
+        exclude = (<span class="st">&#39;author&#39;</span>,<span class="st">&#39;date&#39;</span>,)
+
+<span class="co"># We only allow creation of notes.</span>
+<span class="ch">from</span> datetime <span class="ch">import</span> datetime
+<span class="ch">from</span> django.views.generic.edit <span class="ch">import</span> CreateView
+
+<span class="kw">class</span> NoteCreate(CreateView):
+    form_class = NoteForm
+    model = Note
+    template_name = <span class="st">&#39;notes/add.html&#39;</span>
+    success_url = <span class="st">&#39;/&#39;</span>
+    
+    <span class="kw">def</span> form_valid(<span class="ot">self</span>, form):
+        <span class="co"># Populate the information ourselves that was excluded.</span>
+        form.instance.author = <span class="ot">self</span>.request.user
+        form.instance.date = datetime.now()
+        <span class="co"># Delegate validation to parent class.</span>
+        <span class="kw">return</span> <span class="dt">super</span>(NoteCreate, <span class="ot">self</span>).form_valid(form)</code></pre>
+<p>And we need to add a route in <code>bulletin/urls.py</code>:</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># snip....</span>
+
+<span class="co"># CHANGEME: Must include the view class.</span>
+<span class="ch">from</span> notes.views <span class="ch">import</span> NoteCreate
+
+urlpatterns = patterns(<span class="st">&#39;&#39;</span>,
+
+    <span class="co"># snip....</span>
+    
+    <span class="co"># CHANGEME: allow logged in users to add notes.</span>
+    url(<span class="st">r&#39;^add/$&#39;</span>, NoteCreate.as_view(), name=<span class="st">&#39;add_note&#39;</span>),
+)</code></pre>
+<p>Excellent! With the dev server running, test the following flow:</p>
+<pre><code>http://localhost:8000/logout
+http://localhost:8000/login
+http://localhost:8000/add</code></pre>
+<p>Try adding a valid note, and try adding an invalid note.</p>
+<h2 id="lab">Lab</h2>
+<p>Django is a very large framework. There is a lot you can do with it, and a lot to learn. You don’t even need to know the entire framework to make use of it, as you can see we’ve done quite a bit with a relatively small portion of Django.</p>
+<p>Let’s add some cohesiveness to our main page. Your job is to:</p>
+<ul>
+<li>Add a login link to the bottom of <code>notes/templates/notes/index.html</code> if the user is not logged in, and have that link send the user to the login page. Don’t use hardcoded links.</li>
+<li>Add the following to <code>notes/templates/notes/index.html</code> if the user is logged in (again not using hard coded links):
+<ul>
+<li>A logout link to the bottom, and have that link send the user to the logout page.</li>
+<li>An add link that sends the user to the add a note page.</li>
+</ul></li>
+<li>Change the <code>base.html</code> pages to allow for clicking on the banner text to send the user home.
+<ul>
+<li>Bonus: change the CSS to make the banner link look more like a banner, not like a giant link.</li>
+</ul></li>
+<li><p>Try to add a priority column to the Note model that is a number between the values of 1 through 5. As you work through this process, what are the various steps you need to take. NOTE: this is intended to be more of a thought experiment, but see how far you can get. Be ready to talk about the immediate problems you run into with existing data, various steps you would do to get through this process, the files you would need to change, and why.</p></li>
+<li>see <a href="https://docs.djangoproject.com/en/1.5/ref/templates/builtins/">Django template tags and filters</a></li>
+<li>see <a href="https://docs.djangoproject.com/en/1.5/ref/django-admin/#syncdb">Notes on syncdb</a></li>
+<li><p>see <a href="http://south.aeracode.org/">data migration with South</a></p></li>
+</ul>
+</body>
+</html>

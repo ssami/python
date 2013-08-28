@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
+<body>
+<h1 id="what-is-a-restful-api">What is a RESTful API?</h1>
+<p>A ‘RESTful API’ is a remote API that follows the <em>REST</em> style of software architecture.</p>
+<h2 id="rest---representational-state-transfer">REST - Representational State Transfer</h2>
+<p>REpresentational State Transfer (REST) is a style of software architecture for distributed systems such as the World Wide Web. REST has emerged as a predominant Web service design model.</p>
+<p>The term representational state transfer was introduced and defined in 2000 by Roy Fielding in his doctoral dissertation. Fielding is one of the principal authors of the Hypertext Transfer Protocol (HTTP) specification versions 1.0 and 1.1.</p>
+<p>Conforming to the <strong>REST constraints</strong> is generally referred to as being “RESTful”.</p>
+<ul>
+<li><a href="http://en.wikipedia.org/wiki/Representational_state_transfer">REST description</a></li>
+</ul>
+<h2 id="json---javascript-object-notation">JSON - Javascript Object Notation</h2>
+<p>JSON, or <em>JavaScript Object Notation</em>, is a text-based open standard designed for human-readable data interchange. It is derived from the JavaScript scripting language for representing simple data structures and associative arrays, called objects. Despite its relationship to JavaScript, it is language-independent, with parsers available for many languages.</p>
+<p>The JSON format was originally specified by Douglas Crockford, and is described in RFC 4627. The official Internet media type for JSON is <code>application/json</code>. The JSON filename extension is <code>.json</code>.</p>
+<ul>
+<li><a href="http://json.org">JSON homepage</a></li>
+<li><a href="http://en.wikipedia.org/wiki/JSON">JSON description</a></li>
+</ul>
+<h2 id="requests-python-library">Requests Python Library</h2>
+<p>Requests is an HTTP library, written in Python, for human beings.</p>
+<p>Requests takes all of the work out of Python HTTP/1.1, making your integration with web services seamless. There’s no need to manually add query strings to your URLs, or to form-encode your POST data.</p>
+<ul>
+<li><a href="http://docs.python-requests.org/">requests homepage</a></li>
+</ul>
+<h2 id="using-requests-to-generate-a-github-oauth2-token">Using Requests to Generate a Github OAuth2 Token</h2>
+<p>There are two ways to authenticate with the GitHub API: HTTP basic auth, and OAuth2. It is preferable to use OAuth2, so your script can run without user input, and without storing your password.</p>
+<p>The OAauth2 token can be sent in the request header, or as a parameter. We will send it as a header in later examples.</p>
+<h2 id="requirements">Requirements</h2>
+<p>Before proceeding, we must install requests. Our code will likely work with any version of requests, but just in case we’ll work with a specific version:</p>
+<pre><code>pip install requests==0.12.1</code></pre>
+<h2 id="post-request">POST Request</h2>
+<p>First, we will prompt the user for username/password, and compose a POST request to the API. The request format is documented in the <a href="http://developer.github.com/v3/oauth/#create-a-new-authorization">OAuth section</a> of the Github API docs.</p>
+<p>Try the <code>authtoken_0.py</code> example. (NOTE: PLEASE DON’T USE YOUR REAL PASSWORD IN THIS EXAMPLE!!!!)</p>
+<pre><code>python authtoken_0.py</code></pre>
+<p>That’s not good - our password is shown when we type it!</p>
+<h2 id="password-privacy">Password Privacy</h2>
+<p>We can protect the user’s privacy while inputting their password with the <code>getpass</code> library. While we’re at it, we can prompt the user for an optional note to describe how this token will be used.</p>
+<p>Let’s give it a try:</p>
+<pre><code>python authtoken_1.py </code></pre>
+<p>Seems to have worked! The response is a big JSON blob.</p>
+<h2 id="json-parsing">JSON Parsing</h2>
+<p>We can parse the JSON response and provide just the token, in nice human-readable form, to the user.</p>
+<p>Explore the response data by setting a breakpoint and running our program in the debugger, or by pretty printing the output. The token lives in the creatively-named field <code>token</code>. We will extract it and print it for the user.</p>
+<p>Let’s give it a try:</p>
+<pre><code>python authtoken_2.py </code></pre>
+<p>Bingo - it worked!</p>
+<h2 id="error-handling">Error Handling</h2>
+<p>But what if we don’t type the right username/password combo?</p>
+<pre><code>python authtoken_2.py
+# Purposely use a bad user/password.</code></pre>
+<p>Debug the output. It looks like we have a <code>res.status_code</code> of 401. Any HTTP response code 400 or above indicates an error. It also looks like the server helpfully provides a <code>message</code> field with an error message.</p>
+<p>We can look for response codes &gt;= 400 and present the user a friendly error message:</p>
+<pre><code>python authtoken_3.py </code></pre>
+<p>Now we have a friendly, useful program.</p>
+<h2 id="lab---query-github-for-user-repositories">Lab - Query github for user repositories</h2>
+<p>Using an API token that you generated in the previous example, work on <code>labs/list_repos.py</code> and see if you can work through the github API to get a list of repos for a user.</p>
+</body>
+</html>

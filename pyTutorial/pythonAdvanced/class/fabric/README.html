@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
+<body>
+<h1 id="using-fabric-for-ssh">Using Fabric for SSH</h1>
+<p>Fabric is a library and command-line tool for streamlining the use of SSH for application deployment or systems administration tasks.</p>
+<p>It provides a basic suite of operations for executing local or remote shell commands (normally or via sudo) and uploading/downloading files, as well as auxiliary functionality such as prompting the running user for input, or aborting execution.</p>
+<ul>
+<li><a href="http://fabfile.org/">fab homepage</a></li>
+</ul>
+<h2 id="requirements">Requirements</h2>
+<p>Make sure that fabric is installed. Likely these examples will work with future versions of fabric, but for accuracy, the examples assume the following setup:</p>
+<pre><code>pip install fabric==1.6.1
+# test with
+fab --version</code></pre>
+<h2 id="working-with-remote-hosts">Working with Remote Hosts</h2>
+<p>These examples assume that you will be using fabric for what it was designed for: working with remote systems. The class examples assume a particular, but easy to replicate setup on an Amazon EC2 instance. This setup should have been done prior to your class.</p>
+<p><strong>You will need to get the hostname of the remote system(s), and you will need to substitute the hostname into the example commands and code.</strong></p>
+<h2 id="ssh-key-setup">SSH Key Setup</h2>
+<p>Prior to the class, a set of SSH key files should have been generated for you. These will allow passwordless entry during our scripts, and will help mimic more real life type scenarios.</p>
+<p><strong><em>(Please note: from here on out the commands are placeholders, and you will likely have to change each and everyone of them to match specifics to your users.)</em></strong></p>
+<p>Please login to the test host:</p>
+<pre><code>ssh student1@ec2-54-227-155-203.comfpute-1.amazonaws.com
+(password should be `letmein` without the quotes)</code></pre>
+<p>Check that you have a key made for you:</p>
+<pre><code>ls .ssh</code></pre>
+<p>Confirm that there is a <code>student</code> keyfile there. This is your private key, and your “identity” for the remainder of these examples. Leave the remote login:</p>
+<pre><code>exit</code></pre>
+<p>and grab the file, using a secure copy. The command should resemble something like:</p>
+<pre><code># Assuming scp command is run from your local box,
+# copy the key locally:
+scp student1@ec2-54-227-155-203.compute-1.amazonaws.com:.ssh/student .</code></pre>
+<p>Let’s test and make sure we can get passwordless entry to our test host. Assuming the student key is kept locally, try:</p>
+<pre><code>ssh -i student student1@ec2-54-227-155-203.compute-1.amazonaws.com</code></pre>
+<p>And you should be able to login without having to enter your password. Yay! Exit out of the system, we’re good to go. Remember where you put the student file, you’ll need it.</p>
+<h3 id="note-about-key-files">Note about key files</h3>
+<p>It’s a good practice to not leave keyfiles strewn around your system, and in easy to access places. That said, for the convenience of our lab, please keep the keyfile someplace that is easy for you, and for python, to reference.</p>
+<p>The examples will assume that the keyfile is always in the current working directory.</p>
+<h2 id="fab-command-basic-usage"><code>fab</code> command basic usage</h2>
+<p>Fabric provides a command line utility <code>fab</code>, which (by default) reads configuration and tasks from a file named <code>fabfile.py</code> from the directory it is run. A typical fabfile contains one or more functions to be executed on a group of remote hosts.</p>
+<p>Basic usage of the <code>fab</code> command looks like:</p>
+<pre><code>fab --fabfile=path_to_file.py -i student [--hosts=user@host[,hosts...]] command</code></pre>
+<p>The <code>examples/fabfile_0.py</code> provides commands to check free <code>diskspace</code> and <code>host_type</code>, as well as defining a group of hosts on which to run. Let’s run these examples:</p>
+<pre><code>fab --fabfile=examples/fabfile_0.py -i student --hosts=student1@ec2-75-101-223-215.compute-1.amazonaws.com diskspace</code></pre>
+<p>Let’s run the <code>host_type</code> command:</p>
+<pre><code>fab --fabfile=examples/fabfile_0.py -i student --hosts=student1@ec2-75-101-223-215.compute-1.amazonaws.com diskspace</code></pre>
+<p>Let’s run both:</p>
+<pre><code>fab --fabfile=examples/fabfile_0.py -i student --hosts=student1@ec2-75-101-223-215.compute-1.amazonaws.com diskspace host_type</code></pre>
+<p>Open <code>examples/fabfile_0.py</code> and take a look at the contents. Relatively simple and straightforward.</p>
+<h2 id="basic-configuration-of-fabfiles">Basic configuration of fabfiles</h2>
+<p>Commandline options are great, but what if you want to run the same script over and over with the same hosts? Fabric has the concept of an environment represented in, you’ll never guess, the <code>env</code> object.</p>
+<p>Open <code>examples/fabfile_1.py</code> and change the <code>env</code> object settings to our needs. After changing the file, test things out:</p>
+<pre><code>fab --fabfile=examples/fabfile_1.py host_type diskspace</code></pre>
+<p>Excellent!</p>
+<p>Fabric is Python code. The <code>env</code> object acts as a Python object. Open <code>examples/fabfile_2.py</code> and take a look at <code>examples/fabenv.py</code>. We could organize an environment in an extra file and keep our configuration elsewhere:</p>
+<pre><code>fab --fabfile=examples/fabfile_2.py host_type diskspace</code></pre>
+<p>But probably better is to just use a simple <code>fabricrc</code> style of file and keep the configuration out of fabric. We can reuse <code>examples/fabfile_0.py</code> to demonstrate this:</p>
+<pre><code>fab --fabfile=examples/fabfile_0.py --config=examples/fabricrc host_type diskspace</code></pre>
+<h2 id="task-arguments">Task arguments</h2>
+<p>It’s often useful to pass runtime parameters into your tasks, just as you might during regular Python programming. Fabric has basic support for this using a shell-compatible notation:</p>
+<pre><code>&lt;task name&gt;:&lt;arg&gt;,&lt;kwarg&gt;=&lt;value&gt;,... </code></pre>
+<p>It’s contrived, but let’s use <code>examples/fabfile_3.py</code> as a sample test:</p>
+<pre><code>fab --fabfile=examples/fabfile_3.py hello:name=Me arg_type:name=Me</code></pre>
+<p>And of course we can pass a positional argument, too:</p>
+<pre><code>fab --fabfile=examples/fabfile_3.py hello:Me  rg_type:Me</code></pre>
+<p>Let’s test the input type (I bet you can guess the output):</p>
+<pre><code>fab --fabfile=examples/fabfile_3.py hello:42 arg_type:42</code></pre>
+<p>What happens if we encounter an error by passing in an incorrect number of arguments?</p>
+<pre><code>fab --fabfile=examples/fabfile_3.py hello:42,24 arg_type:42</code></pre>
+<p>Fabric takes a fail fast approach in general. Passing incorrect arguments, this will cause our task to die.</p>
+<ul>
+<li>see <a href="http://docs.fabfile.org/en/1.6/usage/fab.html#per-task-arguments">Fabric Task Arguments</a></li>
+</ul>
+<h2 id="lab---executing-commands-handling-errors">Lab - executing commands, handling errors</h2>
+<p>Build out the <code>labs/execute.py</code> fabfile so that it:</p>
+<ul>
+<li>Has a task named <code>execute</code> that takes any number of positional and keyword arguments.</li>
+<li><code>execute</code> imports <code>examples_fabfile_3.py</code> and passes the arguments to the <code>hello</code> and <code>arg_type</code> tasks.</li>
+<li><code>execute</code> runs each task: <code>hello</code> and <code>arg_type</code> no matter what, even if one of them errors.</li>
+<li>If either of these functions throw an error, <code>execute</code> prints out the statement <code>You haz error</code>.</li>
+</ul>
+<p>You should be able to run both of the following commands.</p>
+<p><code>execute</code> will produce “good” results:</p>
+<pre><code>fab --fabfile=labs/execute.py execute:42</code></pre>
+<p><code>execute</code> will handle (slightly more gracefully) the errors produced in <code>hello</code> and <code>arg_type</code>:</p>
+<pre><code>fab --fabfile=labs/execute.py execute:42,24</code></pre>
+<h2 id="handling-output-in-python">Handling output in Python</h2>
+<p>All programming languages can be useful. The main point of fabric is to utilize the strengths of the shell and the strengths of Python at the same time.</p>
+<p><code>examples/fabfile_4.py</code> begins the real adventure with fabric:</p>
+<pre><code>fab --fabfile=examples/fabfile_4.py ls</code></pre>
+<p>Take a look at the output and the code before jumping into the next lab.</p>
+<h2 id="lab---ls-for-directories">Lab - ls for directories</h2>
+<p>Build out the <code>labs/ls.py</code> fabfile so that it:</p>
+<ul>
+<li>Has a task named <code>ls_num_dirs</code> that takes a single argument from the commandline.</li>
+<li>Returns a count of the number of directories – hidden and visible – at whatever path is passed in.</li>
+<li>Uses “.” as the default argument.</li>
+<li>Does not display stdout from the <code>run</code> command.</li>
+</ul>
+<p>Test commands (all of the following should work without error, although they may give different results):</p>
+<pre><code>fab --config=examples/fabricrc --fabfile=labs/ls.py ls_num_dirs:/
+fab --config=examples/fabricrc --fabfile=labs/ls.py ls_num_dirs:.
+fab --config=examples/fabricrc --fabfile=labs/ls.py ls_num_dirs</code></pre>
+<ul>
+<li>see <a href="http://docs.fabfile.org/en/1.6/api/core/operations.html#fabric.operations.run">Fabric run docs for help</a></li>
+</ul>
+<h2 id="batch-processing-and-using-fabric-as-a-library">Batch processing and using fabric as a library</h2>
+<p>We can run the same task in parallel across multiple hosts if we wish.</p>
+<p>Before running the following example, please open <code>examples/fabfile_5.py</code> and change the <code>env</code> settings. Then open <code>examples/ssh_config</code> and replace the <code>HostName</code> placeholders. After reviewing the code, run as a regular python command:</p>
+<pre><code>python examples/fabfile_5.py</code></pre>
+<h2 id="lab-average-uptime">Lab – Average Uptime</h2>
+<p>Consider the case where we want to collect average uptime from a group of hosts. Using <code>examples/fabfile_5.py</code> as a basis, work with <code>labs/uptime.py</code> to get you a script that will return an average uptime across the (contrived) hosts. The command that you should be able to use to invoke the script is:</p>
+<pre><code>python labs/uptime.py</code></pre>
+<p>Things todo:</p>
+<ul>
+<li>see <a href="http://en.wikipedia.org/wiki/Uptime">Ways to get uptime</a></li>
+<li>Use the <code>ssh_config</code> file we just created.</li>
+<li>Run the commands in tasks in parallel.</li>
+</ul>
+</body>
+</html>
