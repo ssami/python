@@ -2,8 +2,11 @@
 
 import nltk 
 #from nltk.book import * 
-from urllib import urlopen
+import requests
+import string
 import math
+from collections import Counter
+import re
 
 def lexical_diversity(text):
     """Calculates lexical diversity by dividing the number of unique words by the total number of words"""
@@ -31,13 +34,13 @@ def character_words(text, wordLen=10, fDist=7):
 def tf_text(text, word):
     # tf = 0.5 + (0.5 * rawfreq(word, text)/max{raw freq of any word in text})
     # idf = log (total num of docs / num docs with term)
-    allFreqs = sorted([text.count(w) for w in set(text)])
-    print "sample", allFreqs[5:15]
-    maxFreq = allFreqs[-1]
-    print "max freq", maxFreq
+    #allFreqs = sorted([text.count(w) for w in set(text)])
+    count_common = Counter(text).most_common(1)
+    w, maxFreq = count_common[0]
+    #print "max freq", maxFreq
     wordFreq = text.count(word)
-    print "freq of word", wordFreq
-    tf = 0.5 + (0.5 * wordFreq / maxFreq)
+    #print "freq of word", wordFreq
+    tf = (0.5 * wordFreq / maxFreq)
         
     return tf
         
@@ -56,11 +59,26 @@ def tfidf(word, texts=[]):
    
 
 def cleanText(url): 
-    raw = urlopen(url).read()
+    raw = requests.get(url).text
     cleanHtml = nltk.clean_html(raw)
-    tokens = nltk.word_tokenize(raw)
+    noPunc = re.sub("[\.\t\,\:;\(\)\.]", "", cleanHtml, 0, 0)
+    # noPunc = cleanHtml.translate(None, string.punctuation)
+    tokens = nltk.word_tokenize(noPunc)
     text = nltk.Text(tokens)
 
     return text
+
+ 
+ 
+ 
+ # 1. get from URL (urlopen)
+ # 2. clean up html (nltk.clean_html)
+ # 3. clean up punctuation (<text>.translate(None, string.punctuation))
+ # 4. tokenize (nltk.word_tokenize(text))
+ # 5. run through counter (Counter(text).most_common(10))
+ #
+ #
+
+
 
  
