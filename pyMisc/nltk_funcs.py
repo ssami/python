@@ -6,6 +6,7 @@ import requests
 import string
 import math
 from collections import Counter
+from nltk.text import ConcordanceIndex
 import re
 
 def lexical_diversity(text):
@@ -34,12 +35,9 @@ def character_words(text, wordLen=10, fDist=7):
 def tf_text(text, word):
     # tf = 0.5 + (0.5 * rawfreq(word, text)/max{raw freq of any word in text})
     # idf = log (total num of docs / num docs with term)
-    #allFreqs = sorted([text.count(w) for w in set(text)])
     count_common = Counter(text).most_common(1)
     w, maxFreq = count_common[0]
-    #print "max freq", maxFreq
     wordFreq = text.count(word)
-    #print "freq of word", wordFreq
     tf = (0.5 * wordFreq / maxFreq)
         
     return tf
@@ -53,32 +51,30 @@ def tfidf(word, texts=[]):
     tfidfList = []
     for t in texts:
         tfidf = tf_text(t, word) * idf
-        tfidfList.append(tfidf)
+        tfidfList.append((tfidf, t))
         
-    return tfidfList
+    return sorted(tfidfList, reverse=True)
    
 
 def cleanText(url): 
     raw = requests.get(url).text
     cleanHtml = nltk.clean_html(raw)
-    noPunc = re.sub("[\.\t\,\:;\(\)\.]", "", cleanHtml, 0, 0)
+    noPunc = re.sub("[\.\t\,\:;\(\)\.\'\"]", "", cleanHtml, 0, 0)
     # noPunc = cleanHtml.translate(None, string.punctuation)
     tokens = nltk.word_tokenize(noPunc)
     text = nltk.Text(tokens)
 
     return text
 
- 
- 
- 
- # 1. get from URL (urlopen)
- # 2. clean up html (nltk.clean_html)
- # 3. clean up punctuation (<text>.translate(None, string.punctuation))
- # 4. tokenize (nltk.word_tokenize(text))
- # 5. run through counter (Counter(text).most_common(10))
- #
- #
 
-
-
+def concordance(text, word):
+    cindex = ConcordanceIndex(text, key=lambda x:x.lower())
+    offsetList = cindex.offsets(word)
+    contexts = []
+    for i in offsetList[:10]:
+        pre = i-10
+        post = i+10
+        contextStr = ' '.join(text[pre:post])
+        contexts.append(contextStr)
+    return contexts
  
