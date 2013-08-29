@@ -8,6 +8,7 @@ GITHUB_API = 'https://api.github.com'
 
 import requests
 import json
+import getpass
 from urlparse import urljoin
 
 
@@ -16,7 +17,7 @@ def main():
     # User Input
     #
     username = raw_input('Github username: ')
-    password = raw_input('Github password: ')
+    password = getpass.getpass('Github password: ')
     #
     # Compose Request
     #

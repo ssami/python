@@ -3,10 +3,10 @@
 # the fab command.
 
 # whoami
-user=student1
+user=student4
 
 # List of hosts to run against.
-hosts=ec2-75-101-223-215.compute-1.amazonaws.com
+hosts=ec2-107-21-80-136.compute-1.amazonaws.com
 
 # Location of our keyfile.
 # NOTE: this is now relative to where our fab command is executed.

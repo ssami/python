@@ -7,15 +7,15 @@ from fabric.network import disconnect_all
 
 
 # Assumed working directory.
-wd = os.path.realpath(os.path.join(os.path.dirname(__file__), ".."))
+wd = os.path.realpath(os.path.join(os.path.dirname(__file__)))
 # TODO: Replace with the user you are using.
-env.user = "student1"
+env.user = "student4"
 # TODO: Replace with the location of your keyfile, if it is different.
 env.key_filename = os.path.join(wd, "student")
 # TODO: Replace the HostName placeholders with the test hostname in the
 # associated ssh_config file.
 env.use_ssh_config = True
-env.ssh_config_path = os.path.join(wd, "examples", "ssh_config")
+env.ssh_config_path = os.path.join(wd, "ssh_config")
 # Creates a set of simulated hosts.
 env.hosts = ["test1", "test2", "test3", "test4", "test5",]
 

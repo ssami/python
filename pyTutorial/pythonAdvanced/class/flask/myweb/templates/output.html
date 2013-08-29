@@ -1,0 +1,9 @@
+<p>Your command was {{ command }}</p>
+<p>Your output was: </p>
+{% if output %}
+	<ol> 
+		{% for line in output %}
+		<li>{{ line }}</li>
+		{% endfor %}	
+	</ol>
+{% endif %}

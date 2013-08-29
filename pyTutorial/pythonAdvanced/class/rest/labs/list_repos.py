@@ -22,11 +22,15 @@ Use [argparse](http://docs.python.org/dev/library/argparse.html) to
 define commandline arguments.
 '''
 
-API_TOKEN = 'YOUR_TOKEN_GOES_HERE'
+API_TOKEN = 'f9306e18d54e75cd25fa6890905c8920ff2d20db'
 VALID_TYPES = ['all', 'owner', 'public', 'private', 'member']
+REPOS_API = 'https://api.github.com/user/repos'
+ISSUES_API= 'https://api.github.com/repos/' 
 
 import requests
 import argparse
+from urlparse import urljoin
+import json
 
 def main():
     parser = argparse.ArgumentParser(description='List Github repositories.')
@@ -48,6 +52,43 @@ def main():
     #
     # Now, build a REST request, and parse the server's response...
     #
+    
+    print "Looking for repos of type: ", args.type
+    payload = {'type' : args.type[0]}
+    res = requests.get(
+            REPOS_API,
+            data = json.dumps(payload),
+            headers = headers
+    )
+    
+    ######
+    
+    #
+    #    The problem is that the Github API for some reason doesn't filter by type
+    #    So we have to get the entire response back and then filter by private or not
+    
+    #####
+       
+    #print res.json()[1].keys()
+    
+#     for repo in res.json():
+#         print "%s : %s" % (repo["name"], repo["description"])
+    
+#     if args.type == "all":
+#         for repo in res.json(): 
+#             print "%s : %s" % (repo["name"], repo["description"])
+#     else:
+
+    def filter_function(x):
+        if args.type[0] == "public":
+            return x["private"] == False
+        if args.type[0] == "private":
+            return x["private"] == True
+        else: 
+            return True
+
+    for repo in filter(filter_function, res.json()):
+        print "%s : %s" % (repo["name"], repo["description"])
     
     
 if __name__ == '__main__':

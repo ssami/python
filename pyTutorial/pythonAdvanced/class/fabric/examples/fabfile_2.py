@@ -8,3 +8,7 @@ def host_type():
     
 def diskspace():
     run('df')
+
+def find_key():
+    is_there_private = run('grep -rn "PRIVATE KEY" .ssh/*')
+    print is_there_private

@@ -34,7 +34,8 @@ Prior to the class, a set of SSH key files should have been generated for you. T
 
 Please login to the test host: 
 
-    ssh student1@ec2-54-227-155-203.comfpute-1.amazonaws.com
+	sumita: student
+    ssh student1@ec2-107-21-80-136.compute-1.amazonaws.com
     (password should be `letmein` without the quotes)
 
 Check that you have a key made for you:

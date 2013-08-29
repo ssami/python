@@ -40,10 +40,15 @@ True
 """
 
 class Fortune(object):
+    
     def __init__(self):
-        self.sayings = ""
+        self.sayings = []
+    
     def sayingsFromString(self, string):
         self.sayings = string.split("\n")
+    
+    def sayings(self):
+        print self.sayings
 
 if __name__ == '__main__':
     import doctest

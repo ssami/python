@@ -11,3 +11,7 @@ def host_type():
     
 def diskspace():
     run('df')
+
+def dir_list():
+    run('ls -la')
+    

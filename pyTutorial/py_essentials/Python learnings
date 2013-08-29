@@ -36,4 +36,15 @@ b = dict(
 
 
 Python Advanced learnings
+1. install virtual env if you're not sure what you're doing/installing!
+	export WORKON_HOME=<something>
+	mkdir -p $WORKON_HOME
+	source /usr/local/bin/virtualenvwrapper.sh
+	mkvirtualenv env1
 
+	To exit, get out of shell 
+	To reenter, type: 
+	source /usr/local/bin/virtualenvwrapper.sh
+	workon env1
+
+2. Github token: 84c19c013d4b7fe7d68e4f0b5339ecc613ab89c9

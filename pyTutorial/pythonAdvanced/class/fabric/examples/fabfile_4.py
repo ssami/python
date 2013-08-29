@@ -3,9 +3,9 @@ import fabenv
 
 from fabric.api import run
 
-def ls():
+def ls(path="/", *flags):
     # stdout is an extended string type.
-    stdout = run('ls -lh /')
+    stdout = run('ls %s %s' % (' '.join(flags), path))
     print "exit code of command", stdout.return_code
     print "command succeeded?", stdout.succeeded
     print "command failed?" , stdout.failed
