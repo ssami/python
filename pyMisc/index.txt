@@ -1,0 +1,3 @@
+term1:doc1, doc2, doc3
+term2:doc2, doc3, doc5
+term3:doc2, doc4, doc5

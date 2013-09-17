@@ -9,6 +9,7 @@ from collections import Counter
 from nltk.text import ConcordanceIndex
 import re
 
+
 def lexical_diversity(text):
     """Calculates lexical diversity by dividing the number of unique words by the total number of words"""
     numWords = len(text)
@@ -78,3 +79,47 @@ def concordance(text, word):
         contexts.append(contextStr)
     return contexts
  
+
+def loadIndex():
+    fh = open("index.txt", 'r')
+    index = {}
+    terms = fh.readlines()
+    for l in terms: 
+        l = l.rstrip()
+        divs = l.split(":")
+        term = divs[0]
+        docs = divs[1].split(",")
+        index[term] = docs
+    
+    close fh
+    return index
+
+def writeIndex(index): 
+    fh = open('index.txt', 'w')
+    for t, d in index: 
+        doclist = ','.join(d)
+        line = t + ':' + doclist
+        fh.write(line)
+        
+
+def addToIndex(text):
+    # Append to index
+    from nltk.corpus import stopwords
+    sw = stopwords.words('english')
+    
+    cleanHtml = nltk.clean_html(raw)
+    noPunc = re.sub("[\.\t\,\:;\(\)\.\'\"]", "", cleanHtml, 0, 0)
+    tokens = nltk.word_tokenize(noPunc)
+    index = loadIndex()
+    for w in tokens: 
+        if w not in sw:
+            if w in index: 
+                index[w].append(text)
+            else:   
+                index[w] = list()
+                index[w].append(text)
+    writeIndex(index)
+            
+    
+    
+    
