@@ -102,12 +102,20 @@ def writeIndex(index):
         fh.write(line)
         
 
+def prepText(url):
+    raw = requests.get(url).text
+    result = re.findall('<title>(.*)</title>')
+    title = result[0]
+    cleanHtml = nltk.clean_html(raw)
+    noPunc = re.sub("[\.\t\,\:;\(\)\.\'\"]", "", cleanHtml, 0, 0)
+    
+
 def addToIndex(text):
     # Append to index
     from nltk.corpus import stopwords
     sw = stopwords.words('english')
     
-    cleanHtml = nltk.clean_html(raw)
+    cleanHtml = nltk.clean_html(text)
     noPunc = re.sub("[\.\t\,\:;\(\)\.\'\"]", "", cleanHtml, 0, 0)
     tokens = nltk.word_tokenize(noPunc)
     index = loadIndex()
