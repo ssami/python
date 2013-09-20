@@ -1,0 +1,11 @@
+<html>
+	
+	{% if sports %}
+	<ul>
+		{% for team in sports %}
+			<li><span style="color:green">{{ team.team }}</span> is a team in the category <span style="color:gray">{{ team.cat }}</span></li>
+	
+		{% endfor %}
+	</ul>
+	{% endif %}
+</html>

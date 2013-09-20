@@ -1,5 +1,5 @@
 class Document:
     
-    def __init__(self, title, body):
+    def __init__(self, title='', body=''):
         self.title = title
-        self.body = body
+        self.text = body

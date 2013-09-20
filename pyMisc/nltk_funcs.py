@@ -6,8 +6,11 @@ import requests
 import string
 import math
 from collections import Counter
-from nltk.text import ConcordanceIndex
 import re
+
+from nltk.text import ConcordanceIndex
+
+import searchDoc
 
 
 def lexical_diversity(text):
@@ -91,7 +94,7 @@ def loadIndex():
         docs = divs[1].split(",")
         index[term] = docs
     
-    close fh
+    fh.close()
     return index
 
 def writeIndex(index): 
@@ -104,13 +107,14 @@ def writeIndex(index):
 
 def prepText(url):
     raw = requests.get(url).text
-    result = re.findall('<title>(.*)</title>')
+    result = re.findall('<title>(.*)</title>', noPunc, flags=re.I|re.M)
     title = result[0]
     cleanHtml = nltk.clean_html(raw)
     noPunc = re.sub("[\.\t\,\:;\(\)\.\'\"]", "", cleanHtml, 0, 0)
+    doc = Document(title, noPunc)
     
 
-def addToIndex(text):
+def addToIndex(searchdoc):
     # Append to index
     from nltk.corpus import stopwords
     sw = stopwords.words('english')
@@ -122,10 +126,10 @@ def addToIndex(text):
     for w in tokens: 
         if w not in sw:
             if w in index: 
-                index[w].append(text)
+                index[w].append(searchdoc.title)
             else:   
                 index[w] = list()
-                index[w].append(text)
+                index[w].append(searchdoc.title)
     writeIndex(index)
             
     
