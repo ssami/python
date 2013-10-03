@@ -33,18 +33,28 @@ def raw(file):
     contents = re.sub('\s+', ' ', contents)
     return contents
 
-def test2(word):
+def calcTfidf(word):
     files = nltk.corpus.movie_reviews.abspaths()
     texts = []
     for f in files: 
         texts.append(nltk.Text(nltk.word_tokenize(raw(f))))
     rank = nltk_funcs.tfidf(word, texts)
     print rank[:5]
+    
+    
+def importDoc(url):
+    doc = nltk_funcs.prepText(url)
+    print "Doc title:" , doc.title
+    print "Doc body:" , doc.body[1000:1100]
+    
+    
+def addIndex():
+    
 
-if __name__ == "__main__": 
-    if len(sys.argv) > 1:
-        search = sys.argv[1]        #get the word search arg
-        print "Searching for: ", search
-        test2(search)
-    else: 
-        print "Supply a word or phrase to search for"
+#if __name__ == "__main__": 
+#    if len(sys.argv) > 1:
+#        search = sys.argv[1]        #get the word search arg
+#        print "Searching for: ", search
+#        test2(search)
+#    else: 
+#        print "Supply a word or phrase to search for"

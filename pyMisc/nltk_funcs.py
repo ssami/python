@@ -10,7 +10,7 @@ import re
 
 from nltk.text import ConcordanceIndex
 
-import searchDoc
+from searchDoc import Document
 
 
 def lexical_diversity(text):
@@ -84,7 +84,7 @@ def concordance(text, word):
  
 
 def loadIndex():
-    fh = open("index.txt", 'r')
+    fh = open('index.txt', 'r')
     index = {}
     terms = fh.readlines()
     for l in terms: 
@@ -99,7 +99,7 @@ def loadIndex():
 
 def writeIndex(index): 
     fh = open('index.txt', 'w')
-    for t, d in index: 
+    for t, d in index.items(): 
         doclist = ','.join(d)
         line = t + ':' + doclist
         fh.write(line)
@@ -107,11 +107,13 @@ def writeIndex(index):
 
 def prepText(url):
     raw = requests.get(url).text
-    result = re.findall('<title>(.*)</title>', noPunc, flags=re.I|re.M)
+    result = re.findall('<title>(.*)</title>', raw, flags=re.I|re.M|re.S)
     title = result[0]
     cleanHtml = nltk.clean_html(raw)
     noPunc = re.sub("[\.\t\,\:;\(\)\.\'\"]", "", cleanHtml, 0, 0)
     doc = Document(title, noPunc)
+    
+    return doc
     
 
 def addToIndex(searchdoc):
@@ -119,19 +121,16 @@ def addToIndex(searchdoc):
     from nltk.corpus import stopwords
     sw = stopwords.words('english')
     
-    cleanHtml = nltk.clean_html(text)
-    noPunc = re.sub("[\.\t\,\:;\(\)\.\'\"]", "", cleanHtml, 0, 0)
-    tokens = nltk.word_tokenize(noPunc)
+    tokens = nltk.word_tokenize(searchdoc.body)
     index = loadIndex()
-    for w in tokens: 
+    for w in set(tokens): 
         if w not in sw:
             if w in index: 
                 index[w].append(searchdoc.title)
             else:   
                 index[w] = list()
                 index[w].append(searchdoc.title)
+     
     writeIndex(index)
             
-    
-    
     
