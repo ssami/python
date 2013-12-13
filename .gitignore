@@ -33,7 +33,6 @@ nosetests.xml
 # Mac stuff
 *.DS_Store
 
-
 # Mr Developer
 .mr.developer.cfg
 .project
