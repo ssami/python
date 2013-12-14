@@ -13,6 +13,7 @@ class SceneDescriptors(object):
 			'This room is unhealthily red',
 		]}
 
+	@classmethod
 	def getScene(self, good=False):
 		"""
 			Good: boolean parameter which gives you a "good" or "bad" scenario
@@ -31,6 +32,6 @@ class SceneDescriptors(object):
 
 
 if __name__ == "__main__":
-	sd = SceneDescriptors()
-	print "Good scenario:	", sd.getScene(True)
-	print "Bad scenario:	", sd.getScene(False)
+	
+	print "Good scenario:	", SceneDecsriptors.getScene(True)
+	print "Bad scenario:	", SceneDescriptors.getScene(False)
