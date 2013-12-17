@@ -18,10 +18,10 @@ class Player(object):
 		return self._name
 
 	@property
-	def points(self):
+	def health(self):
 		return self._health
 
-	def changePoints(self, points):
+	def changeHealth(self, points):
 		self._health += points
 
 
@@ -29,6 +29,6 @@ class Player(object):
 
 if __name__ == "__main__":
 	p = Player()
-	p.changePoints(-3)
+	p.changeHealth(-3)
 	print p.points
 

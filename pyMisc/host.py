@@ -19,6 +19,12 @@ class Host(object):
 		'smiles beatifically and fades into nothingness'
 	]
 
+	requests = [
+		'asks for help moving furniture',
+		'asks for really good Peruvian coffee',
+		'asks for good restaurant recommendations',
+	]
+
 
 	@classmethod
 	def getDescription(self):
@@ -29,3 +35,8 @@ class Host(object):
 	def getDisappearance(self):
 
 		return self.disappears[self.random.randint(0, len(self.disappears)-1)]
+
+	@classmethod
+	def getRequest(self):
+
+		return self.requests[self.random.randint(0, len(self.requests)-1)]

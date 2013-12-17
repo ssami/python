@@ -21,22 +21,67 @@ class Room(object):
 		from scenery import SceneDescriptors
 		from monster import Monster
 		from angel import Angel
+		from host import Host
+		from people import People
+		from player import Player
 
 		self._rooms = []
 		_roomNum = random.randint(1,3)							# get a random num of rooms for this room to connect to
-		for i in _roomNum: 
+		for i in range(_roomNum): 
 			goodness = random.randint(0, 1000) % 2				# flip a coin to generate goodness
 			# end? need to figure out how to end
-			if (player.health > 0):
-				self._rooms.append(Room(player, False, goodness))
-			else: 
-				print "HEALTH ZERO. YOU DIE. GO AWAY."
+			if player.health > 0 and not end:
+				self._rooms.append(Room(player, True, goodness))
 		self._description = SceneDescriptors.getScene(good)
 		if good: 
 			self._creature = Angel()
+			print "The angel", self._creature.name, "appears before you. It is", self._creature.description, ". It", Host.getRequest()
+			print "Your choices are: "
+			resp = People.getResponses()
+			for key, val in enumerate(resp):
+				print key, ".", resp[val]
+
+			print "Now, what will you do? Select a number"
+			
+			choice = ''
+			invalid = True
+			while invalid:
+				choice = raw_input("-->")
+				if int(choice) > len(resp)-1:
+					print "That number is invalid! Try again"
+				elif int(choice) < 0:
+					print "That number isn't even a positive number! Try again"
+				else:
+					print "You selected", choice
+					invalid = False
+
+			choiceType = resp.keys()[int(choice)]
+			choiceText = resp[choiceType]		# always prints only one from each good, bad, wierd list anyway
+			typeMap = {
+				'good': True, 
+				'bad': False, 
+				'weird': False
+			}
+
+			if typeMap[choiceType]:
+				print "The angel bestows upon you", self._creature.pointsGiven, "health and", self._creature.disappears
+				player.changeHealth(self._creature.pointsGiven)
+
+			else: 
+				print "The angel is annoyed. It smites you and takes away", self._creature.pointsGiven, "health"
+				player.changeHealth(-1 * self._creature.pointsGiven)
+				
+			print "You now have", player.health, "health left"
+
+
+
 		else: 
 			self._creature = Monster()
 
 
 
+if __name__ == "__main__":
+	from player import Player
 
+	p = Player()
+	r = Room(p, True, True)

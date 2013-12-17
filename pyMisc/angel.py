@@ -30,10 +30,10 @@ class Angel(object):
 
 	@property
 	def pointsGiven(self):
-		return self._pointsTaken
+		return self._pointsGiven
 
 	@property
-	def disappear(self):
+	def disappears(self):
 		return self._disappear
 
 
