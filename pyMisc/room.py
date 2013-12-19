@@ -20,18 +20,12 @@ class Room(object):
 		import random
 		from scenery import SceneDescriptors
 		from monster import Monster
+		from bestiary import Bestiary
 		from angel import Angel
 		from host import Host
 		from people import People
 		from player import Player
 
-		self._rooms = []
-		_roomNum = random.randint(1,3)							# get a random num of rooms for this room to connect to
-		for i in range(_roomNum): 
-			goodness = random.randint(0, 1000) % 2				# flip a coin to generate goodness
-			# end? need to figure out how to end
-			if player.health > 0 and not end:
-				self._rooms.append(Room(player, True, goodness))
 		self._description = SceneDescriptors.getScene(good)
 		if good: 
 			self._creature = Angel()
@@ -73,10 +67,45 @@ class Room(object):
 				
 			print "You now have", player.health, "health left"
 
-
-
 		else: 
 			self._creature = Monster()
+			print "The monster", self._creature.name, "appears before you. It is", self._creature.description
+			print "Your choices are: "
+			resp = People.getDefenses()
+
+			for key, val in enumerate(resp):
+				print key, ".", resp[val]
+
+			print "Now, how will you defend yourself? Select a number"
+			
+			choice = ''
+			invalid = True
+			while invalid:
+				choice = raw_input("-->")
+				if int(choice) > len(resp)-1:
+					print "That number is invalid! Try again"
+				elif int(choice) < 0:
+					print "That number isn't even a positive number! Try again"
+				else:
+					print "You selected", choice
+					invalid = False
+
+			choiceType = resp.keys()[int(choice)]
+			choiceText = resp[choiceType]		# always prints only one from each good, bad, wierd list anyway
+			typeMap = {
+				'good': True, 
+				'bad': False, 
+				'weird': False
+			}
+
+			if typeMap[choiceType]:
+				print "The monster", self._creature.death
+
+			else: 
+				print "The monster", self._creature.attack, "and you lose", self._creature.pointsTaken
+				player.changeHealth(self._creature.pointsTaken)
+				
+			print "You now have", player.health, "health left"
 
 
 

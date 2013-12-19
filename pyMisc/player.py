@@ -8,7 +8,7 @@ class Player(object):
 	def __init__(self, name="Bozo"):
 
 		self._name = name
-		self._health = 100
+		self._health = 20
 
 		print "Your name is", self._name , "and you start off with", self._health, "points"
 
