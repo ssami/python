@@ -42,7 +42,7 @@ def tf_text(text, word):
     count_common = Counter(text).most_common(1)
     w, maxFreq = count_common[0]
     wordFreq = text.count(word)
-    tf = (0.5 * wordFreq / maxFreq)
+    tf = (0.5 * float(wordFreq) / float(maxFreq))
         
     return tf
         

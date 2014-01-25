@@ -6,7 +6,7 @@ if __name__ == "__main__":
 
 	print "Hello! You're about to play the most awesome game ever"
 	name = raw_input("What's your name? >>> ")
-	if not name: 
+	if not name.strip(): 
 		p = Player()
 	else :
 		p = Player(name)
